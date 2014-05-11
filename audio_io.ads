@@ -1,3 +1,5 @@
+with ada.text_IO, Integer_Direct_IO;
+use Integer_Direct_IO;
 package Audio_IO is
    
  
@@ -15,8 +17,8 @@ package Audio_IO is
    
    
    function Entete (Adresse : in String) return T_Entete;
-   function Corps (Adresse : in String) return T_Corps;
-   procedure Ecriture (Corps : in T_Corps ; Entete : in T_Corps ; Adresse : in String);
+   function Corps (Adresse : in String) return T_Echantillon;
+   procedure Ecriture (Corps : in T_Echantillon ; Entete : in T_Entete ; Adresse : in String);
 
 private
    
@@ -61,10 +63,10 @@ private
    type T_Echantillon;
    type Pointeur_Sur_Echantillon is access T_Echantillon;
    type T_Echantillon is record
-      Tab : Tab_Echantillon;
-      Suiv : Pointeur_Sur_Echantillon;
+       Tab : Tab_Echantillon;
+       Suiv : Pointeur_Sur_Echantillon;
    end record;
-   
-  
-   
+
+
+
 end Audio_IO;
