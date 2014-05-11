@@ -5,8 +5,8 @@ package Audio_IO is
  
    
    type T_Entete is private;
-   type T_Echantillon is private;
-   
+   type P_Echantillon is private;
+   type Tab_Entete is private;
    -- on instanciera un package de liste, avec le type T_echantillon, qu'on appelera T_Corps
    
    
@@ -15,15 +15,15 @@ package Audio_IO is
    Mauvaise_Taille_Entete : exception;
    
    
-   
+   function Rec_Entete (Adresse : in String) return Tab_Entete;
    function Entete (Adresse : in String) return T_Entete;
-   function Corps (Adresse : in String) return T_Echantillon;
-   procedure Ecriture (Corps : in T_Echantillon ; Entete : in T_Entete ; Adresse : in String);
+   function Corps (Adresse : in String) return P_Echantillon;
+   procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
 
 private
    
    type Pointeur_Sur_String is access String;
-   
+   type Tab_Entete is array (1..Taille_Entete) of Integer; 
    type T_Entete is record
       
       -- Declaration fichier format wave
@@ -61,12 +61,9 @@ private
    
    type Tab_Echantillon is array (1..Taille_Echantillon) of Integer;
    type T_Echantillon;
-   type Pointeur_Sur_Echantillon is access T_Echantillon;
+   type P_Echantillon is access T_Echantillon;
    type T_Echantillon is record
        Tab : Tab_Echantillon;
-       Suiv : Pointeur_Sur_Echantillon;
+       Suiv : P_Echantillon;
    end record;
-
-
-
 end Audio_IO;
