@@ -5,12 +5,11 @@ package Audio_IO is
  
    
    type T_Entete is private;
-   type P_Echantillon is private;   -- c'est ce que t'avais appelé P_Echantillon en fait, puisqu'on a pas besoin de faire un record avec Pointeur sur le premier élément + autre chose (y'a pas autre chose xD)
-
-   
-   
-   -- type Tab_Entete is private;
-   -- E : le type Tab_Entete ne doit pas être accessible à l'utilisateur, c'est intermédiaire, tout comme la fonction Rec_Entete non ? nous ce qu'on veut c'est direct le T_entete et faut développer les fonctions pour récupérer les éléments qui nous seront utiles (je sais pas encore lesquels mais je vais te dire ça très bientot !)
+   type P_Echantillon is private;   
+   --type Tab_Entete is private;
+   -- lui il est que dans le corps, c'est intermédiaire
+   type Tab_Echantillon is private;
+   -- faut le mettre la aussi, parce que sinon si j'ai que le P_Echantillon mais que je peux rien faire sur les Tab_Echantillon je serai pas dans le paté moi pour utiliser les coeffs non ?
    
    
    Taille_Entete : constant Integer := 12;
@@ -19,7 +18,7 @@ package Audio_IO is
    TropDeCanaux : exception; -- dans ce projet on ne traite que les wav mono
    
    
-   -- function Rec_Entete (Adresse : in String) return Tab_Entete; Cette fonction est dans le corps, mais pas utilisable pas l'utilisateur
+   -- function Rec_Entete (Adresse : in String) return Tab_Entete; Cette fonction est dans le corps, mais pas utilisable pas l'utilisateur, c'est intermédiaire je crois
    function Entete (Adresse : in String) return T_Entete;
    function Corps (Adresse : in String) return P_Echantillon;
    procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
