@@ -1,0 +1,128 @@
+V "GNAT Lib v2013"
+P ZX
+
+RN
+RV NO_ALLOCATORS
+RV NO_ENUMERATION_MAPS
+RV NO_IO
+RV NO_LOCAL_ALLOCATORS
+RV NO_RECURSION
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_DEFAULT_INITIALIZATION
+RV NO_ELABORATION_CODE
+RV SPARK
+
+U audio_io%b		audio_io.adb		dd5f88cf NE OO PK IL
+W ada.tags%s		a-tags.adb		a-tags.ali
+W system.img_int%s	s-imgint.adb		s-imgint.ali
+W system.val_char%s	s-valcha.adb		s-valcha.ali
+
+U audio_io%s		audio_io.ads		df033903 EE OO PK
+W ada%s			ada.ads			ada.ali
+W ada.tags%s		a-tags.adb		a-tags.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+W integer_direct_io%s	integer_direct_io.ads	integer_direct_io.ali
+W system%s		system.ads		system.ali
+W system.exception_table%s  s-exctab.adb	s-exctab.ali
+W system.standard_library%s  s-stalib.adb	s-stalib.ali
+
+D ada.ads		20130417131023 3ffc8e18
+D a-direio.ads		20130417131019 5842da07
+D a-except.ads		20130417131019 10fcae55
+D a-finali.ads		20130417131020 52ecdc1b
+D a-ioexce.ads		20130417131020 8b9de6cd
+D a-stream.ads		20130417131021 2ca4ee37
+D a-tags.ads		20130417131022 6c0509d0
+D a-textio.ads		20130417131022 386df5d4
+D a-unccon.ads		20130417131022 f9eb8f06
+D audio_io.ads		20140518125856 9c4e4c56
+D audio_io.adb		20140518125838 4111c499
+D integer_direct_io.ads	20140511095854 7b208081
+D interfac.ads		20130417131027 cb4a8015
+D i-cstrea.ads		20130417131026 8128536b
+D system.ads		20130417131036 f2f2d889
+D s-crtl.ads		20130417131029 dfcfca61
+D s-direio.ads		20130417131029 068812e8
+D s-exctab.ads		20130417131029 66e51330
+D s-ficobl.ads		20130417131029 55a71d43
+D s-finmas.ads		20130417131029 b95bb341
+D s-finroo.ads		20130417131029 4ff27390
+D s-imgint.ads		20130417131030 02dbe0c2
+D s-parame.ads		20130417131032 b6e20cc0
+D s-pooglo.ads		20130417131032 542f33d0
+D s-soflin.ads		20130417131032 24c8153c
+D s-stache.ads		20130417131032 596fc1b4
+D s-stalib.ads		20130417131032 f78bcf95
+D s-stoele.ads		20130417131032 facd7d98
+D s-stoele.adb		20130417131032 afc5dc80
+D s-stopoo.ads		20130417131032 7b8fbeee
+D s-traent.ads		20130417131033 5221ee41
+D s-unstyp.ads		20130417131034 6ae15c76
+D s-valcha.ads		20130417131034 77a482a2
+D s-wchcon.ads		20130417131034 bfeb2e3d
+X 1 ada.ads
+16K9*Ada 19e8 10|1r6 11|3r25
+X 2 a-direio.ads
+53P9*File_Type(17|53R9) 11|7r19[12|3] 24r21[12|3] 37r9[12|3]
+55E9*File_Mode
+55n23*In_File{55E9[12|3]} 11|12r23[12|3] 27r25[12|3] 40r26[12|3]
+66I9*Count<long_integer> 10|13r29[12|3]
+80U14*Open 11|12s9[12|3] 27s17[12|3] 40s17[12|3]
+86U14*Close 11|18s9[12|3] 32s17[12|3]
+106U14*Read 11|15s13[12|3] 29s25[12|3] 44s25[12|3]
+119U14*Set_Index 11|41s17[12|3]
+X 8 a-textio.ads
+49K13*Text_IO 471e16 10|1w10 11|3r29
+X 10 audio_io.ads
+3K9*Audio_IO 70l5 70e13 11|1b14 55l5 55t13
+7R9*T_Entete 20r53 22r63 28c9 61e14 11|22r58 23r23 50r63
+8P9*P_Echantillon(64R9) 21r52 22r35 65c9 68r15 11|36r53 50r36
+9A9*Tab_Entete(integer) 18r53 27c9 11|5r54 6r15
+13i4*Taille_Entete{2|66I9[12|3]} 27r33 11|41r30
+14i4*Taille_Echantillon{integer} 63r38 11|43r30
+15X4*Mauvaise_Taille_Entete
+18V13*Rec_Entete{9A9} 18>25 11|5b14 20l9 20t19
+18s25 Adresse{string} 11|5b26 12r32
+20V13*Entete_tot{7R9} 20>25 11|22b18 34l13 34t23
+20s25 Adresse{string} 11|22b30 27r34
+21U14*Corps 21>21 21<42 11|36b15 47s17 48l9 48t14
+21s21 Adresse{string} 11|36b22 40r35 47r23
+21p42 Ech{8P9} 11|36b43 42m17 45r25 47r31
+22U14*Ecriture 22>24 22>51 22>74 11|50b15 53l9 53t17
+22p24 Corps{8P9} 11|50b25
+22r51 Entete{7R9} 11|50b51
+22s74 Adresse{string} 11|50b73
+26P9 Pointeur_Sur_String(string)
+31a7*Cte_RIFF{string} 11|30m29
+33i7*File_Size{natural}
+35a7*Format_Fichier{string}
+39a7*Format_Bloc{string}
+41i7*Bloc_Size{natural}
+43i7*Audio_Format{natural}
+45i7*Nb_Canaux{natural}
+47i7*Frequ_Echantillonnage{natural}
+49i7*Octet_Par_Sec{natural}
+51i7*Octet_Par_Bloc{natural}
+53i7*Bit_Par_Echantillon{natural}
+57a7*Data_Bloc_ID{string}
+59i7*Data_Size{natural}
+63A9 Tab_Echantillon(integer)<integer> 67r14
+64R9 T_Echantillon 65r33 66c9 69e14 11|42r28
+67a8*Tab{63A9} 11|45m33
+68p8*Suiv{8P9} 11|47m39
+X 11 audio_io.adb
+3K13 txt=3:29
+6a9 Tab{10|9A9} 14r18 16m13 19r16
+7p9 Fichier{2|53P9[12|3]} 12m14 12r14 15r18 18m15 18r15
+9i9 Int{integer} 15m27 16r23
+14i13 i<long_integer> 16r17
+23r17 Ent{10|7R9} 30m25 33r24
+24p17 f{2|53P9[12|3]} 27m22 27r22 29r30 32m23 32r23
+25i17 val{integer} 29m33 30r74
+28i21 i{integer} 30r38
+37p5 f{2|53P9[12|3]} 40m23 40r23 41r27 44r30
+38i9 val{integer} 44m32 45r43
+43i21 n{integer} 45r37
+X 12 integer_direct_io.ads
+3K13*Integer_Direct_IO[2|43] 10|1w19 2r5
+

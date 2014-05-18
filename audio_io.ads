@@ -10,16 +10,17 @@ package Audio_IO is
    -- on instanciera un package de liste, avec le type T_echantillon, qu'on appelera T_Corps
    
    
-   Taille_Entete : constant Integer := 12;
+   Taille_Entete : constant count := 12;
    Taille_Echantillon : constant Integer := 512;
    Mauvaise_Taille_Entete : exception;
    
    
    function Rec_Entete (Adresse : in String) return Tab_Entete;
-   function Entete (Adresse : in String) return T_Entete;
-   function Corps (Adresse : in String) return P_Echantillon;
+   -- On crée cette fonction temporairement pour voir si la lecture binaire marche. 
+   function Entete_tot (Adresse : in String) return T_Entete;
+   procedure Corps (Adresse : in String; Ech : out P_Echantillon);
    procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
-
+   
 private
    
    type Pointeur_Sur_String is access String;
