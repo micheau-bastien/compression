@@ -1,0 +1,86 @@
+V "GNAT Lib v2013"
+M P W=b
+P ZX
+
+RN
+RV NO_IO
+RV NO_STANDARD_STORAGE_POOLS
+RV NO_UNCHECKED_ACCESS
+RV NO_DEFAULT_INITIALIZATION
+RV NO_IMPLEMENTATION_ATTRIBUTES
+RV NO_IMPLEMENTATION_PRAGMAS
+RV NO_OBSOLESCENT_FEATURES
+RV SPARK
+
+U lect%b		lect.adb		b72540da NE OO SU IL
+W ada%s			ada.ads			ada.ali
+W ada.direct_io%s
+Z ada.io_exceptions%s	a-ioexce.ads		a-ioexce.ali
+W ada.tags%s		a-tags.adb		a-tags.ali
+W ada.text_io%s		a-textio.adb		a-textio.ali
+Z ada.unchecked_conversion%s
+Z interfaces%s		interfac.ads		interfac.ali
+Z interfaces.c_streams%s  i-cstrea.adb		i-cstrea.ali
+Z system%s		system.ads		system.ali
+Z system.crtl%s		s-crtl.ads		s-crtl.ali
+Z system.direct_io%s	s-direio.adb		s-direio.ali
+Z system.file_control_block%s  s-ficobl.ads	s-ficobl.ali
+Z system.file_io%s	s-fileio.adb		s-fileio.ali
+W system.img_int%s	s-imgint.adb		s-imgint.ali
+Z system.storage_elements%s  s-stoele.adb	s-stoele.ali
+
+D ada.ads		20130417131023 3ffc8e18
+D a-direio.ads		20130417131019 5842da07
+D a-direio.adb		20130417131019 ddb08ceb
+D a-except.ads		20130417131019 10fcae55
+D a-finali.ads		20130417131020 52ecdc1b
+D a-ioexce.ads		20130417131020 8b9de6cd
+D a-stream.ads		20130417131021 2ca4ee37
+D a-tags.ads		20130417131022 6c0509d0
+D a-textio.ads		20130417131022 386df5d4
+D a-unccon.ads		20130417131022 f9eb8f06
+D interfac.ads		20130417131027 cb4a8015
+D i-cstrea.ads		20130417131026 8128536b
+D lect.adb		20140511092003 d70a6f09
+D system.ads		20130417131036 f2f2d889
+D s-crtl.ads		20130417131029 dfcfca61
+D s-direio.ads		20130417131029 068812e8
+D s-exctab.ads		20130417131029 66e51330
+D s-ficobl.ads		20130417131029 55a71d43
+D s-fileio.ads		20130417131029 45ce2f0f
+D s-finmas.ads		20130417131029 b95bb341
+D s-finroo.ads		20130417131029 4ff27390
+D s-imgint.ads		20130417131030 02dbe0c2
+D s-parame.ads		20130417131032 b6e20cc0
+D s-pooglo.ads		20130417131032 542f33d0
+D s-soflin.ads		20130417131032 24c8153c
+D s-stache.ads		20130417131032 596fc1b4
+D s-stalib.ads		20130417131032 f78bcf95
+D s-stoele.ads		20130417131032 facd7d98
+D s-stoele.adb		20130417131032 afc5dc80
+D s-stopoo.ads		20130417131032 7b8fbeee
+D s-traent.ads		20130417131033 5221ee41
+D s-unstyp.ads		20130417131034 6ae15c76
+D s-wchcon.ads		20130417131034 bfeb2e3d
+X 1 ada.ads
+16K9*Ada 19e8 13|1r6 1r19 4r25 5r27
+X 2 a-direio.ads
+43k13*Direct_IO 191e18 13|1w23 5r31
+53P9 File_Type(16|53R9) 13|10r14[5]
+55E9 File_Mode
+55n23 In_File{55E9[13|5]} 13|14r21[5]
+80U14 Open 13|14s5[5]
+86U14 Close 13|19s5[5]
+106U14 Read 13|16s9[5]
+X 9 a-textio.ads
+49K13*Text_IO 471e16 13|1w10 4r29
+242U14*Put 13|17s13
+X 13 lect.adb
+3U11*lect 3b11 20l5 20t9
+4K13 txt=4:29 17r9
+5K13 Dir_IO[2|43] 6r9
+8P10 P_string(string)
+10p1 MonFichier{2|53P9[5]} 14m10 14r10 16r14 19m11 19r11
+11i1 c{integer} 16m26 17r31
+15i9 n{integer}
+
