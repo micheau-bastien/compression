@@ -12,17 +12,24 @@ package Audio_IO is
    -- faut le mettre la aussi, parce que sinon si j'ai que le P_Echantillon mais que je peux rien faire sur les Tab_Echantillon je serai pas dans le paté moi pour utiliser les coeffs non ?
    
    
-   Taille_Entete : constant Integer := 12;
+   Taille_Entete : constant count := 12;
    Taille_Echantillon : constant Integer := 512;
    Mauvaise_Taille_Entete : exception;
    TropDeCanaux : exception; -- dans ce projet on ne traite que les wav mono
    
    
+   -- CE QUE J'AVAIS FAIT
    -- function Rec_Entete (Adresse : in String) return Tab_Entete; Cette fonction est dans le corps, mais pas utilisable pas l'utilisateur, c'est intermédiaire je crois
    function Entete (Adresse : in String) return T_Entete;
    function Corps (Adresse : in String) return P_Echantillon;
+   -- CE QUE J4AVAIS FAIT
+     
+   function Rec_Entete (Adresse : in String) return Tab_Entete;
+   -- On crée cette fonction temporairement pour voir si la lecture binaire marche. 
+   function Entete_tot (Adresse : in String) return T_Entete;
+   procedure Corps (Adresse : in String; Ech : out P_Echantillon);
    procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
-
+   
 private
    
    type Pointeur_Sur_String is access String;
