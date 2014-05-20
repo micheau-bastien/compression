@@ -1,82 +1,63 @@
-with Ada.Text_IO, Integer_Direct_IO;
+with ada.text_IO, Integer_Direct_IO;
 use Integer_Direct_IO;
 package Audio_IO is
    
  
    
    type T_Entete is private;
-   type P_Echantillon is private;   
-   --type Tab_Entete is private;
-   -- lui il est que dans le corps, c'est intermédiaire
-   type Tab_Echantillon is private;
-   -- faut le mettre la aussi, parce que sinon si j'ai que le P_Echantillon mais que je peux rien faire sur les Tab_Echantillon je serai pas dans le paté moi pour utiliser les coeffs non ?
+   type P_Echantillon is private;
+   type Tab_Entete is private;
+   -- on instanciera un package de liste, avec le type T_echantillon, qu'on appelera T_Corps
    
    
    Taille_Entete : constant count := 12;
-   Taille_Echantillon : constant count := 512;
+   Taille_Echantillon : constant Integer := 512;
    Mauvaise_Taille_Entete : exception;
-   TropDeCanaux : exception; -- dans ce projet on ne traite que les wav mono
    
    
-   -- CE QUE J'AVAIS FAIT
-   -- function Rec_Entete (Adresse : in String) return Tab_Entete; Cette fonction est dans le corps, mais pas utilisable pas l'utilisateur, c'est intermédiaire je crois
-   function Entete (Adresse : in String) return T_Entete;
-   function Corps (Adresse : in String) return P_Echantillon;
-   -- CE QUE J4AVAIS FAIT
-     
    function Rec_Entete (Adresse : in String) return Tab_Entete;
    -- On crée cette fonction temporairement pour voir si la lecture binaire marche. 
    function Entete_tot (Adresse : in String) return T_Entete;
    procedure Corps (Adresse : in String; Ech : out P_Echantillon);
-   function Corps_to_string (Ech : in P_echantillon) return string;
    procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
    
 private
    
    type Pointeur_Sur_String is access String;
-   -- a quoi servent les pointeurs sur string ?
-   
-   --type Tab_Entete is array (1..Taille_Entete) of Integer; 
-   -- ça ça sera que dans le body
-   
+   type Tab_Entete is array (1..Taille_Entete) of Integer; 
    type T_Entete is record
       
       -- Declaration fichier format wave
-      
+      Cte_RIFF : String (1..4); 
       --4 octets : 52-49-46-46 (RIFF) en hexa
-      Cte_RIFF : String (1..4);    
-      --4 octets : Taille du fichier -8 octets su
       File_Size : Natural; 
-      --4 octets : 57-41-56-45 (WAVE) en hexa
+      --4 octets : Taille du fichier -8 octets su
       Format_Fichier : String (1..4); 
-     
+      --4 octets : 57-41-56-45 (WAVE) en hexa
       
-     
       -- Description format audio
-      --4 octets : 66-6d-74-20 (FMT )
       Format_Bloc : String (1..4); 
-      --4 octets : Taille de la structure WAVE-FORMAT  : 16 octets --> 00 00 00 10 
+      --4 octets : 66-6d-74-20 (FMT )
       Bloc_Size : Natural; 
-      --2 octets : Normalement 1 (WAVE)
+      --4 octets : Taille de la structure WAVE-FORMAT  : 16 octets --> 00 00 00 10 
       Audio_Format : Natural; 
-      --2 octets : 1 pour mono / 2 stereo / etc On traitera que le mono, erreur sur les autres
+      --2 octets : Normalement 1 (WAVE)
       Nb_Canaux : Natural; 
-      -- 4 octets : En Hz Généralement 11 025 ou 22 050 ou 44 100 ou 48 000 ou 96 000
+      --2 octets : 1 pour mono / 2 stereo / Erreur autres (on ne les traite pas, seulement stéréo)
       Frequ_Echantillonnage : Natural; 
-      -- 4 octets : 
+      -- 4 octets : En Hz Généralement 11 025 ou 22 050 ou 44 100 ou 48 000 ou 96 000
       Octet_Par_Sec : Natural; 
-      -- 2 Octets : Nb_Cannaux*bit_par_echantillon/8
+      -- 4 octets : 
       Octet_Par_Bloc : Natural; 
-      -- 2octets : 16 ou 24
+      -- 2 Octets : Nb_Cannaux*bit_par_echantillon/8
       Bit_Par_Echantillon : Natural; 
- 
+      -- 2octets : 16 ou 24
       
       -- Bloc de données
-      --4 Octets : vaut data 64-61-74-61 en hexa
       Data_Bloc_ID : String (1..4); 
-      -- 4 octets : Taille en octets des données = Taille_fichier-Taille_Entete avc Taille_Entete=44
+      --4 Octets : vaut data 64-61-74-61 en hexa
       Data_Size : Natural; 
-
+      -- 4 octets : Taille en octets des données = Taille_fichier-Taille_Entete avc Taille_Entete=44
    end record;
    
    type Tab_Echantillon is array (1..Taille_Echantillon) of Integer;
@@ -86,5 +67,4 @@ private
        Tab : Tab_Echantillon;
        Suiv : P_Echantillon;
    end record;
-   
 end Audio_IO;

@@ -12,12 +12,12 @@ RV NO_DEFAULT_INITIALIZATION
 RV NO_ELABORATION_CODE
 RV SPARK
 
-U audio_io%b		audio_io.adb		22931e47 NE OO PK IL
+U audio_io%b		audio_io.adb		dd5f88cf NE OO PK IL
 W ada.tags%s		a-tags.adb		a-tags.ali
 W system.img_int%s	s-imgint.adb		s-imgint.ali
 W system.val_char%s	s-valcha.adb		s-valcha.ali
 
-U audio_io%s		audio_io.ads		20cfaf8b EE OO PK
+U audio_io%s		audio_io.ads		df033903 EE OO PK
 W ada%s			ada.ads			ada.ali
 W ada.tags%s		a-tags.adb		a-tags.ali
 W ada.text_io%s		a-textio.adb		a-textio.ali
@@ -35,8 +35,8 @@ D a-stream.ads		20130417131021 2ca4ee37
 D a-tags.ads		20130417131022 6c0509d0
 D a-textio.ads		20130417131022 386df5d4
 D a-unccon.ads		20130417131022 f9eb8f06
-D audio_io.ads		20140518133417 6382dade
-D audio_io.adb		20140518130820 4111c499
+D audio_io.ads		20140518125856 9c4e4c56
+D audio_io.adb		20140518125838 4111c499
 D integer_direct_io.ads	20140511095854 7b208081
 D interfac.ads		20130417131027 cb4a8015
 D i-cstrea.ads		20130417131026 8128536b
@@ -66,7 +66,7 @@ X 2 a-direio.ads
 53P9*File_Type(17|53R9) 11|7r19[12|3] 24r21[12|3] 37r9[12|3]
 55E9*File_Mode
 55n23*In_File{55E9[12|3]} 11|12r23[12|3] 27r25[12|3] 40r26[12|3]
-66I9*Count<long_integer> 10|13r29[12|3] 14r34[12|3]
+66I9*Count<long_integer> 10|13r29[12|3]
 80U14*Open 11|12s9[12|3] 27s17[12|3] 40s17[12|3]
 86U14*Close 11|18s9[12|3] 32s17[12|3]
 106U14*Read 11|15s13[12|3] 29s25[12|3] 44s25[12|3]
@@ -79,7 +79,7 @@ X 10 audio_io.ads
 8P9*P_Echantillon(64R9) 21r52 22r35 65c9 68r15 11|36r53 50r36
 9A9*Tab_Entete(integer) 18r53 27c9 11|5r54 6r15
 13i4*Taille_Entete{2|66I9[12|3]} 27r33 11|41r30
-14i4*Taille_Echantillon{2|66I9[12|3]} 63r38 11|43r30
+14i4*Taille_Echantillon{integer} 63r38 11|43r30
 15X4*Mauvaise_Taille_Entete
 18V13*Rec_Entete{9A9} 18>25 11|5b14 20l9 20t19
 18s25 Adresse{string} 11|5b26 12r32
@@ -106,7 +106,7 @@ X 10 audio_io.ads
 53i7*Bit_Par_Echantillon{natural}
 57a7*Data_Bloc_ID{string}
 59i7*Data_Size{natural}
-63A9 Tab_Echantillon(integer)<2|66I9[12|3]> 67r14
+63A9 Tab_Echantillon(integer)<integer> 67r14
 64R9 T_Echantillon 65r33 66c9 69e14 11|42r28
 67a8*Tab{63A9} 11|45m33
 68p8*Suiv{8P9} 11|47m39
@@ -122,7 +122,7 @@ X 11 audio_io.adb
 28i21 i{integer} 30r38
 37p5 f{2|53P9[12|3]} 40m23 40r23 41r27 44r30
 38i9 val{integer} 44m32 45r43
-43i21 n<long_integer> 45r37
+43i21 n{integer} 45r37
 X 12 integer_direct_io.ads
 3K13*Integer_Direct_IO[2|43] 10|1w19 2r5
 
