@@ -46,6 +46,14 @@ package body Audio_IO is
 		end loop;
 		Corps(Adresse,Ech.all.suiv);
     end Corps;
+    
+	function Corps_to_string (Ech : in P_echantillon) return string is
+		Str : string(1..Taille_Echantillon);
+	begin
+		for char in 1..Taille_Echantillon loop
+			Str(char) := Ech.all.val(char);
+		end loop;
+	end Corps_to_string;
 
     procedure Ecriture (Corps : in P_Echantillon; Entete : in T_Entete; Adresse : in String) is
     begin

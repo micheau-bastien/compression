@@ -11,7 +11,7 @@ package Audio_IO is
    
    
    Taille_Entete : constant count := 12;
-   Taille_Echantillon : constant Integer := 512;
+   Taille_Echantillon : constant count := 512;
    Mauvaise_Taille_Entete : exception;
    
    
@@ -19,6 +19,7 @@ package Audio_IO is
    -- On crée cette fonction temporairement pour voir si la lecture binaire marche. 
    function Entete_tot (Adresse : in String) return T_Entete;
    procedure Corps (Adresse : in String; Ech : out P_Echantillon);
+   function Corps_to_string (Ech : in P_echantillon) return string;
    procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
    
 private
