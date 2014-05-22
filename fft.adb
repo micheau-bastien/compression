@@ -1,14 +1,14 @@
-WITH ADA.Numerics.Generic_Elementary_Functions,ADA.Text_IO;
+WITH ADA.Numerics.Generic_Elementary_Functions,ADA.Text_IO,ADA.Numerics;
 use ADA.Text_IO;
 
 PACKAGE BODY Fft IS
 
 
 
-   -- pour utilise exp()
+   -- pour utilise exp() (en fait cos() et sin())
    PACKAGE Num IS NEW ADA.Numerics.Generic_Elementary_Functions (Float);
 
-
+   PI : float := ADA.Numerics.pi;
 
 
    FUNCTION Dec_2_Bin (Decimal : IN Natural) RETURN String IS
@@ -45,6 +45,22 @@ PACKAGE BODY Fft IS
       END LOOP;
       RETURN Bin_2_Dec(Bin);
    END Inverse;
+
+
+   -- chaque case du tableau contient le coefficient exp(-i*2pi*K/(2^P))
+
+   FUNCTION Init_Tab RETURN Tab_Exp IS
+      res : Tab_Exp;
+   BEGIN
+      FOR P IN Res'RANGE(1) LOOP
+         FOR K IN Res'RANGE(2) LOOP
+            Res(P,K):=(Num.Cos(PI*Float(2*K)/Float(2**P)),-Num.Sin(PI*Float(2*K)/Float(2**P)));
+         END LOOP;
+      END LOOP;
+      RETURN Res;
+   END Init_Tab;
+
+
 
 
    END Fft;
