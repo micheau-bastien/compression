@@ -32,6 +32,77 @@ package body Audio_IO is
 		close(f);
 		return Ent;
 	end Entete_Tot;
+	
+	type P_string is access string;
+    function RIFF_OK (Adresse : in String) return Boolean is
+		f : File_Type;
+		val : integer;
+	begin
+		open(f, In_File, Adresse);
+		read(f,val);
+		-- Série de IF un peu lourde mais optimisée pour éviter d'avoir à charger les 4 premiers integer d'un coup.
+		if val=52 then
+			read(f,val);
+			set_index(f,1);
+			if val = 49 then
+				read(f,val);
+				if val=46 then
+					read(f,val);
+					if val=46 then
+						close(f);
+						return true;
+					else
+						close(f);
+						return false;
+					end if;
+				else
+					close(f);
+					return false;
+				end if;
+			else
+				close(f);
+				return false;
+			end if;
+		else
+			close(f);
+			return false;
+		end if;
+	end RIFF_OK;
+	
+    function File_size (Adresse : in String) return Natural is
+		f : File_Type;
+		Taille : P_String;
+		val : integer;
+	begin
+		open(f, In_File, adresse);
+		set_index(f, 4);
+		for n in 1..4 loop
+			read(f,val);
+			-- FAIRE SUPPRESSION STRING NON utilisés
+			Taille := new string'(Taille.all & integer'image(val));
+		end loop;
+		return natural'value(Taille.all);
+	end File_size;
+	
+    function Is_Wave (Adresse : in String) return boolean is
+	begin
+		return TRUE;
+	end Is_Wave;
+	
+    function Bloc_Size (Adresse : in String) return Natural is
+	begin
+		return 0;
+	end Bloc_Size;
+	
+    function Nb_Cannaux (adresse : in String) return Natural is
+	begin
+		return 0;
+	end Nb_Cannaux;
+	
+    function Freq_echantillonage (adresse : in String) return Natural is
+	begin
+		return 0;
+	end Freq_echantillonage;
 
     procedure Corps (adresse : in String; Ech : out P_Echantillon) is
     f : File_Type;
@@ -41,6 +112,7 @@ package body Audio_IO is
 		set_index(f, Taille_Entete);
 		Ech := new T_Echantillon;
 		for n in 1.. Taille_Echantillon loop
+			-- Voir fin de fichier possible ds un echantillon -> Erreur
 			Read(f,val);
 			Ech.all.Tab(n) := val;
 		end loop;
