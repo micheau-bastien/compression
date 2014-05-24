@@ -16,6 +16,9 @@ PROCEDURE Test_Fft IS
 
 
    Expo : Tab_Exp := Init_Tab;
+   T : Tab_In;
+   T2 : Tab_Out;
+   T3 : Tab_Out_Quantif;
 
 BEGIN
    Put_Line("-------------------------------------------");
@@ -71,8 +74,39 @@ BEGIN
    Put_Line("-------------------------------------------");
    New_Line;
 
+   Put_Line("-------------------------------------------");
+   Put_Line("4 : Test de la procedure de reorganisation d'un tableau");
+   Put_Line("4.a Reorganiser un tableau contenant les valeurs de 0 a 511");
+   Put_Line("Depart Attendu : 0 256 128 384 64 320");
+   FOR I IN T'RANGE LOOP
+      T(I):=I;
+   END LOOP;
+   Reindexe(T);
+   Put("Depart Obtenu : ");
+   FOR I IN 0..5 LOOP
+      Put(Integer'Image((T(I))));
+   END LOOP;
+   New_Line;
+   Put_Line("-------------------------------------------");
+   New_Line;
 
-
+   Put_Line("-------------------------------------------");
+   Put_Line("5 : Test de la procedure de quantification");
+   Put_Line("5.a : Quantifier sur 3 bits un tableau dont les valeurs vont de -1 a 1 avec un pas de 0.01");
+   T2 := (OTHERS => (0.0,0.0));
+   FOR I IN 0..99 LOOP         -- attention, peut être cause d'erreur pour Puissance_De_2_Nb_Echantillons trop petit
+      T2(I).Re := 2.0*Float(I)*0.01 - 1.0;
+      T2(I).Im := T2(I).Re+0.01;
+   END LOOP;
+   T3 := Quantification(3,1.0,T2);
+   Put_Line ("Valeur  Valeur quantifiee");
+   FOR I IN 0..99 LOOP
+      Put_Line (Float'Image(T2(I).Re) & "    " & Integer'Image(T3(2*I)));
+      Put_Line (Float'Image(T2(I).Im) & "    " & Integer'Image(T3(2*I+1)));
+   END LOOP;
+   New_Line;
+   Put_Line("-------------------------------------------");
+   New_Line;
 
 END Test_FFT;
 

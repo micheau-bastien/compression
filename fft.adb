@@ -3,12 +3,14 @@ use ADA.Text_IO;
 
 PACKAGE BODY Fft IS
 
-
+   -- utilisé dans Reindexe
+   type Tab_visite is array (0..Taille_Tableaux_In-1) of Boolean;
 
    -- pour utilise exp() (en fait cos() et sin())
    PACKAGE Num IS NEW ADA.Numerics.Generic_Elementary_Functions (Float);
 
-   PI : float := ADA.Numerics.pi;
+
+   PI : constant float := ADA.Numerics.pi;
 
 
    FUNCTION Dec_2_Bin (Decimal : IN Natural) RETURN String IS
@@ -61,6 +63,38 @@ PACKAGE BODY Fft IS
    END Init_Tab;
 
 
+   PROCEDURE Reindexe (A : IN OUT Tab_In) IS
+      indice_inverse : Natural;
+      Aux : Natural;
+      Visite : tab_visite := (others => False);
+   BEGIN
+      FOR I IN A'RANGE LOOP
+         Indice_Inverse := Inverse(I);
+         IF Indice_Inverse /= I AND not Visite(I) THEN
+            Aux := A(I);
+            A(I) := A(Indice_Inverse);
+            A(Indice_Inverse) := Aux;
+            Visite(Indice_Inverse) := True;
+         END IF;
+      END LOOP;
+   END Reindexe;
+
+   -- si D est le pas de quantification, on cherche p tq  X soit dans [p.D, (p+1).D[ soit
+   -- X = p.D + R       avec 0<R<D
+   FUNCTION Quantification (Nb_De_Bits : IN Positive ; Max : IN Float ; Valeurs : Tab_Out) RETURN Tab_Out_Quantif IS
+      Res : Tab_Out_Quantif;
+      Pas : Float := 2.0*Max/(2.0**Nb_De_Bits);
+   BEGIN
+      Put_Line(Float'Image(Pas));
+      FOR I IN Valeurs'RANGE LOOP
+         Res (2*I) := Integer(Float'Floor((Max+Valeurs(I).Re)/Pas));
+         Res (2*I+1) := Integer(Float'Floor((Max+Valeurs(I).Im)/Pas));
+      END LOOP;
+      Return res;
+   END Quantification;
 
 
-   END Fft;
+
+
+
+  END Fft;
