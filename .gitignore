@@ -1,0 +1,10 @@
+
+*.ali
+
+*.o
+
+test_audio_io
+
+.#audio_io.adb
+
+*.adb~

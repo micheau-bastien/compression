@@ -1,4 +1,4 @@
-with ada.text_IO, Integer_Direct_IO;
+with ada.text_IO, ada.integer_text_io, Integer_Direct_IO;
 use Integer_Direct_IO;
 package Audio_IO is
    
@@ -19,14 +19,22 @@ package Audio_IO is
    function Rec_Entete (Adresse : in String) return Tab_Entete;
    -- On crée cette fonction temporairement pour voir si la lecture binaire marche. 
    function Entete_tot (Adresse : in String) return T_Entete;
-   
+   procedure Aff_Hex (adresse : in String);
+-- Renvoie si le code RIFF de l'entête correspond au code voulu dans le cadre de notre compression
    function RIFF_OK (Adresse : in String) return Boolean;
+   -- Renvoie la taille du fichier
    function File_size (Adresse : in String) return Natural;
+   -- Renvoie true si le fichier est un wave
    function Is_Wave (Adresse : in String) return boolean;
+   --Renvoie la taille d'un bloc
    function Bloc_Size (Adresse : in String) return Natural;
-   function Nb_Cannaux (adresse : in String) return Natural;
+   -- Renvoie True si le Nombre de cannaux est 1 (correspondant à notre compression)
+   function Nb_Cannaux_OK (adresse : in String) return Boolean;
+   -- Renvoie la fréquence d'échantillonnage
    function Freq_echantillonage (adresse : in String) return Natural;
+   -- Renvoie le pointeur vers les échantillons du corps
    procedure Corps (Adresse : in String; Ech : out P_Echantillon);
+   -- Ecrit une entete et un échantillon dans un fichier crée à l'adresse donnée
    procedure Ecriture (Corps : in P_Echantillon ; Entete : in T_Entete ; Adresse : in String);
    
 private

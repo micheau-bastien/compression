@@ -1,7 +1,20 @@
 package body Audio_IO is
 
     package txt renames ada.text_io;
+	package int renames ada.integer_text_io;
     
+	procedure Aff_hex (adresse : in String) is
+		f : File_Type;
+		val : integer := 0;
+	begin
+		open(F, In_File, Adresse);
+		for n in 1..200 loop
+			read(f,val);
+			int.put(val);
+			Txt.Put("     ");
+		end loop;
+		close(f);
+	end Aff_Hex;
     function Rec_Entete (Adresse : in String) return Tab_Entete is
         Tab : Tab_Entete;
         Fichier : File_type;
@@ -22,7 +35,7 @@ package body Audio_IO is
 	function Entete_Tot (adresse : in String) return T_Entete is
 		Ent : T_Entete;
 		f : File_Type;
-		val : integer;
+		val : integer := 0;
 	begin -- Entete_Tot
 		open(F, In_File, Adresse);
 		for i in 1..4  loop
@@ -36,37 +49,11 @@ package body Audio_IO is
 	type P_string is access string;
     function RIFF_OK (Adresse : in String) return Boolean is
 		f : File_Type;
-		val : integer;
+		val : Integer := 0;
 	begin
 		open(f, In_File, Adresse);
 		read(f,val);
-		-- Série de IF un peu lourde mais optimisée pour éviter d'avoir à charger les 4 premiers integer d'un coup.
-		if val=52 then
-			read(f,val);
-			set_index(f,1);
-			if val = 49 then
-				read(f,val);
-				if val=46 then
-					read(f,val);
-					if val=46 then
-						close(f);
-						return true;
-					else
-						close(f);
-						return false;
-					end if;
-				else
-					close(f);
-					return false;
-				end if;
-			else
-				close(f);
-				return false;
-			end if;
-		else
-			close(f);
-			return false;
-		end if;
+		return Val=1179011410;
 	end RIFF_OK;
 	
     function File_size (Adresse : in String) return Natural is
@@ -94,10 +81,10 @@ package body Audio_IO is
 		return 0;
 	end Bloc_Size;
 	
-    function Nb_Cannaux (adresse : in String) return Natural is
+    function Nb_Cannaux_OK (adresse : in String) return Boolean is
 	begin
-		return 0;
-	end Nb_Cannaux;
+		return false;
+	end Nb_Cannaux_OK;
 	
     function Freq_echantillonage (adresse : in String) return Natural is
 	begin
