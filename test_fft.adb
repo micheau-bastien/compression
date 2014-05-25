@@ -1,9 +1,16 @@
-WITH Fft, Ada.Text_IO;
+WITH Fft, Ada.Text_IO, ADA.Numerics, ADA.Numerics.Generic_Elementary_Functions;
 use fft, Ada.Text_IO;
 
 PROCEDURE Test_Fft IS
 
-   FUNCTION Complex_2_String (A : IN Comp.Complex) RETURN String IS
+     -- pour utilise sin()
+   PACKAGE Num IS NEW ADA.Numerics.Generic_Elementary_Functions (Float);
+
+   use Num;
+
+   PI : constant float := ADA.Numerics.pi;
+
+   FUNCTION Complex_2_String (A : IN FComplex.Complex) RETURN String IS
    BEGIN
       IF A.Im = 0.0 THEN
          return Float'Image(A.Re);
@@ -15,10 +22,15 @@ PROCEDURE Test_Fft IS
    END Complex_2_String;
 
 
-   Expo : Tab_Exp := Init_Tab;
-   T : Tab_In;
-   T2 : Tab_Out;
-   T3 : Tab_Out_Quantif;
+   Expo : Tab_Exp := Tab_Expo_TFD;
+   T : Tab_TQ;
+   T2 : Tab_F;
+   T3 : Tab_FQ;
+   T4 : Tab_T;
+   T5 : Tab_TQ;
+   Te : Float := 1.0/44100.0;
+   Resultat : Res_TFD;
+   T6 : Tab_FQ;
 
 BEGIN
    Put_Line("-------------------------------------------");
@@ -41,9 +53,9 @@ BEGIN
 
    Put_Line("-------------------------------------------");
    Put_Line("2 : Test de l'inversion");
-   Put_Line("2.a Inverse(261)");
+   Put_Line("2.a Mirroir(261)");
    Put_Line("Attendu : 321");
-   Put_Line("Resultat : " & Integer'Image(Inverse(261)));
+   Put_Line("Resultat : " & Integer'Image(Mirroir(261)));
    Put_Line("-------------------------------------------");
    New_Line;
 
@@ -94,11 +106,11 @@ BEGIN
    Put_Line("5 : Test de la procedure de quantification");
    Put_Line("5.a : Quantifier sur 3 bits un tableau dont les valeurs vont de -1 a 1 avec un pas de 0.01");
    T2 := (OTHERS => (0.0,0.0));
-   FOR I IN 0..99 LOOP         -- attention, peut être cause d'erreur pour Puissance_De_2_Nb_Echantillons trop petit
+   FOR I IN 0..99 LOOP         -- attention, peut être cause d'erreur pour Bits_per_Frame trop petit
       T2(I).Re := 2.0*Float(I)*0.01 - 1.0;
       T2(I).Im := T2(I).Re+0.01;
    END LOOP;
-   T3 := Quantification(3,1.0,T2);
+   T3 := Quantification_F(3,1.0,T2);
    Put_Line ("Valeur  Valeur quantifiee");
    FOR I IN 0..99 LOOP
       Put_Line (Float'Image(T2(I).Re) & "    " & Integer'Image(T3(2*I)));
@@ -107,6 +119,22 @@ BEGIN
    New_Line;
    Put_Line("-------------------------------------------");
    New_Line;
+
+   Put_Line("-------------------------------------------");
+   Put_Line("6 : Test de la TFD");
+   Put_Line("6.a : TFD sur une sinusoide parfaite de fréquence 200 Hz");
+   FOR I IN T4'RANGE LOOP
+      T4(I) := sin(PI*Float(2*200*I)*Te);
+   END LOOP;
+   T5 := Quantification_T(16, 1.0,T4);
+   Resultat := TFD(T5 , Expo);
+   T6 := Quantification_F(8, Resultat.max, Resultat.tab);
+
+   FOR I IN T6'RANGE LOOP
+      Put(Integer'Image(T6(I)));
+   END LOOP;
+
+   Put_Line(Integer'Image(Integer'Last));
 
 END Test_FFT;
 

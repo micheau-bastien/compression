@@ -2,52 +2,74 @@ with ADA.Numerics.Generic_Complex_types;
 
 PACKAGE Fft IS
 
-   PACKAGE Comp IS NEW ADA.Numerics.Generic_Complex_Types (Float);
+   -- instanciation package FComplex pour utilisation de nombres complexes
+
+   PACKAGE FComplex IS NEW ADA.Numerics.Generic_Complex_Types (Float);
+   USE FComplex;
+
+   -- A récupérer dans l'entête
+
+   Bits_Per_Echantillon_Origine : Natural := 16;
+
+   -- constantes pour définir la taille des frames sur lesquels la TFD travaille
+
+   Bits_per_Frame : CONSTANT Natural := 9;
+   Frame_Size : CONSTANT Natural := 2**Bits_per_Frame;
+   Half_Frame_Size : CONSTANT Natural := 2**(Bits_per_Frame-1);
 
 
-   Puissance_De_2_Nb_Echantillons : CONSTANT Natural := 9;
-   Taille_Tableaux_In : CONSTANT Natural := 2**Puissance_De_2_Nb_Echantillons;
-   Taille_Tableaux_Out : CONSTANT Natural := 2**(Puissance_De_2_Nb_Echantillons-1);
+   -- tous les types tableaux sur lesquels on va travailler
+   -- T : temporel (tableaux de réel car notre signal l'est, ou de natural quantifiés)
+   -- F : fréquentiel (tableaux de complexes, ou de couple de natural quantifiés)
+   -- Q : quantifié (donc tableaux de natural et plus float)
 
-   -- on travaille par paquet de 2^9 = 512 échantillons
+   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Natural;
+   TYPE Tab_T IS ARRAY (0..Frame_Size-1) OF Float;
 
-   TYPE Tab_Exp IS ARRAY(1..Puissance_De_2_Nb_Echantillons,0..Taille_Tableaux_Out-1) of Comp.Complex;
-   TYPE Tab_In IS ARRAY (0..Taille_Tableaux_In-1) OF Natural;
-   TYPE Tab_Out IS ARRAY (0..Taille_Tableaux_Out-1) OF Comp.Complex;
-   TYPE Tab_Out_Quantif IS ARRAY (0..Taille_Tableaux_In-1) OF Natural;
+   TYPE Tab_FQ IS ARRAY (0..Frame_Size-1) OF Natural;
+   TYPE Tab_F IS ARRAY (0..Half_Frame_Size-1) OF Complex;
 
-   TYPE Res_TFD IS RECORD
-      Tab : Tab_Out;
-      Max : Float;
+   TYPE Tab_Exp IS ARRAY(1..Bits_per_Frame,0..Half_Frame_Size-1) of Complex;
+
+
+   -- Pour chaque frame on obtient le spectre échantilloné, et on conserve la valeur maximale
+   -- des échantillons temporels, pour ne pas amplifier les parties calmes des morceaux
+   -- en mettant toutes les frames au même niveau d'amplitude à la décompression
+
+   TYPE Resultat_TFD IS RECORD
+      Tab : Tab_FQ;
+      Amplitude_Max : Natural;
    END RECORD;
 
 
-   -- Convertit un natural decimal en binaire sous forme de string à 9 charactères
+
+
+
+
+   -- Fonctions intermédiaires utilisées par la TFD :
+
+
+   -- Conversion natural decimal <-> binaire sur Bits_per_frame bits sous forme de string
    FUNCTION Dec_2_Bin (Decimal : IN Natural) RETURN String;
-
-   -- Convertit un binaire, sous forme de string
-   -- (0 s'écrit comme une chaine vide), en natural
    FUNCTION Bin_2_Dec (Binaire : IN String) RETURN Natural;
+   -- Renvoie le natural dont l'expression binaire est le symétrique de celle de l'argument
+   FUNCTION Mirroir (A : IN Natural) RETURN Natural;
+   -- Réorganise les indices du tableau en préparation pour la TFD
+   PROCEDURE Reindexe (A : IN OUT Tab_TQ);
 
-   -- Renvoie le natural dont l'expression binaire et obtenu en miroir
-   -- par rapport à celle de l'argument
-   FUNCTION Inverse (A : IN Natural) RETURN Natural;
+   -- Retourne un tableau contenant les facteurs exponentiels pour la TFD
+   FUNCTION Tab_Expo_TFD RETURN Tab_Exp;
 
-   -- Retourne un tableau contenant tous les facteurs exponentiels
-   -- nécessaires au calcul de la TFD
-   FUNCTION Init_Tab RETURN Tab_Exp;
-
-   -- Reordonne les coefficients de A en préparation pour la TFD
-
-   Procedure Reindexe (A : IN OUT Tab_In);
+   -- Fonctions de quantification
+   -- Pour le spectre, on quantifie l'intervalle [-Max,Max] sur l'échelle pleine de 0 à 2^Nb_de_bits
+   FUNCTION Quantification_F (Nb_de_bits : in Positive ; Max : in Float ; Valeurs : Tab_F) return Tab_FQ;
+   -- Pour le signal temporel, afin de conserver les nuances, il ne faut pas quantifier chaque frame sur l'échelle pleine
+   -- Au Max, on fait correspondre une valeur quantifiée MaxQ
+   FUNCTION Quantification_T (Nb_de_bits : in Positive ; Max : in Float ; MaxQ : in Natural; Valeurs : Tab_T) return Tab_TQ;
 
 
-   -- Récupère le nombre de bits sur lequel quantifier et le maximum
-   -- en valeur absolue des valeurs à quantifier, (on quantifie alors sur [-Max;Max])
-   -- de façon à ce que le premier bit soit un bit de signe
 
-   FUNCTION Quantification (Nb_de_bits : in Positive ; Max : in Float ; Valeurs : Tab_Out) return Tab_Out_Quantif;
-
-   --FUNCTION TFD (Coeffs : in Tab_In ; expo : in Tab_Exp) return Res_TFD;
+   -- fonction qui calcule la TFD a proprement parler
+   FUNCTION TFD (Coeffs : in Tab_TQ ; Expo : in Tab_Exp; Nb_de_bits : in natural) return Resultat_TFD;
 
 end Fft;
