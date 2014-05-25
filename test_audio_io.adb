@@ -1,19 +1,12 @@
-with ada.text_io, audio_io;
-use ada.text_io, audio_io;
+with Audio_IO;
+use Audio_IO;
 
-procedure test_audio_io is
-	
-	procedure test_is_riff is
-	begin
-		if RIFF_OK ("test.wav") then
-			put("RIFF : OK ! ");
-		else
-			put("RIFF : ERROR ! ");
-		end	if;
-	end test_is_riff;
-	
-begin
-   
-   aff_hex("test.wav");
-	test_is_riff;
+PROCEDURE Test_Audio_Io IS
+
+
+
+BEGIN
+
+   Lire_Fichier("test.wav");
+
 end test_audio_io;
