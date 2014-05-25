@@ -1,46 +1,44 @@
-WITH ADA.Direct_IO, ADA.Text_IO;
+PACKAGE Audio_IO IS
 
 
-package Audio_IO is
-
-   PACKAGE Natural_Direct_IO IS NEW ADA.Direct_IO(Character);
-   use Natural_Direct_Io;
-
-   PACKAGE Txt RENAMES ADA.Text_IO;
-
-
-   -- définition des constantes utiles
+   -- définition des constantes
 
    Bits_Per_Frame : CONSTANT Natural := 9;
    Frame_Size : CONSTANT Natural := 2**Bits_Per_Frame;
 
-
-   TYPE Frame IS ARRAY (0..Frame_Size-1) OF Integer;
-
-   type L_Frame;
-   type P_Frame is access L_Frame;
-   type L_Frame is record
-       Tab : Frame;
-       Suiv : P_Frame;
-   end record;
+   -- déclaration des types
+   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Natural;
 
 
+   -- prototypes
+
+   -- vérifie que le fichier est "bon"
+   FUNCTION Verification_Fichier (Adresse : IN String) RETURN Boolean;
+
+   -- retourne la fréquence d'échantillonnage
+   FUNCTION Frequence_D_Echantillonnage (Adresse : IN String) RETURN Natural;
+
+   -- retourne le nombre de bits utilisé pour codé chaque échantillon
+   FUNCTION Nb_Bits_Par_Echantillon (Adresse : IN String) RETURN Natural;
+
+   -- retourne le numéro de l'octet à partir duquel commence le bloc de données
+   FUNCTION Amorce_Data_Bloc (Adresse : IN String) RETURN Natural;
+
+   -- donne la taille du bloc de donnée en octets
+   FUNCTION Size_Data_Bloc (Adresse : IN String) RETURN Natural;
+
+   -- retourne la i-ème frame. Fonction non protégé contre les débordements de fichier
+   FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return Tab_TQ;
+
+
+   PROCEDURE Lire_Fichier (Adresse : IN String);
 
 
 
-   procedure Lire_Fichier (Adresse : IN String);
 
-
-
-
--- Renvoie si le code RIFF de l'entète correspond au code voulu dans le cadre de notre compression
---   function RIFF_OK (Adresse : in String) return Boolean;
-
-   -- Renvoie la taille du fichier
+ -- Renvoie la taille du fichier
   -- function File_size (Adresse : in String) return Natural;
 
-   -- Renvoie true si le fichier est un wave
-  -- function Is_Wave (Adresse : in String) return boolean;
 
    --Renvoie la taille d'un bloc
    --function Bloc_Size (Adresse : in String) return Natural;

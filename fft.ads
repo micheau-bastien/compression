@@ -3,13 +3,15 @@ with ADA.Numerics.Generic_Complex_types;
 PACKAGE Fft IS
 
    -- instanciation package FComplex pour utilisation de nombres complexes
-
    PACKAGE FComplex IS NEW ADA.Numerics.Generic_Complex_Types (Float);
    USE FComplex;
+
+
 
    -- A récupérer dans l'entête
 
    Bits_Per_Echantillon_Origine : Natural := 16;
+
 
    -- constantes pour définir la taille des frames sur lesquels la TFD travaille
 
@@ -49,11 +51,6 @@ PACKAGE Fft IS
    -- Fonctions intermédiaires utilisées par la TFD :
 
 
-   -- Conversion natural decimal <-> binaire sur Bits_per_frame bits sous forme de string
-   FUNCTION Dec_2_Bin (Decimal : IN Natural) RETURN String;
-   FUNCTION Bin_2_Dec (Binaire : IN String) RETURN Natural;
-   -- Renvoie le natural dont l'expression binaire est le symétrique de celle de l'argument
-   FUNCTION Mirroir (A : IN Natural) RETURN Natural;
    -- Réorganise les indices du tableau en préparation pour la TFD
    PROCEDURE Reindexe (A : IN OUT Tab_TQ);
 
