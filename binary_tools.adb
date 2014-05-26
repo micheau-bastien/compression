@@ -8,6 +8,9 @@ PACKAGE BODY Binary_Tools IS
          Res(I):=Integer'Image(Aux mod 2)(2);
          Aux := Aux/2;
       END LOOP;
+      IF Aux /= 0 THEN
+         RAISE Nb_Bits_Insuffisant;
+      END IF;
       return Res;
    END Dec_2_Bin;
 
@@ -22,7 +25,7 @@ PACKAGE BODY Binary_Tools IS
    END Bin_2_Dec;
 
 
-   FUNCTION Mirroir (A : IN Natural ; Nb_de_Bits : IN Natural) RETURN Natural IS
+   FUNCTION Miroir (A : IN Natural ; Nb_de_Bits : IN Natural) RETURN Natural IS
       Bin : String := Dec_2_Bin (A,Nb_de_Bits);
       Aux : Character;
    BEGIN
@@ -32,6 +35,6 @@ PACKAGE BODY Binary_Tools IS
          Bin(Bin'Last-I):=Aux;
       END LOOP;
       RETURN Bin_2_Dec(Bin);
-   END Mirroir;
+   END Miroir;
 
   END Binary_Tools;

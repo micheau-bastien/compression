@@ -4,9 +4,11 @@ use Audio_IO;
 PROCEDURE Test_Audio_Io IS
 
 
-
+   OK : boolean;
 BEGIN
 
-   Lire_Fichier("test.wav");
+
+   OK := Verification_Fichier("sine1.wav");
+   If
 
 end test_audio_io;
