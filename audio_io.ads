@@ -16,7 +16,7 @@ PACKAGE Audio_IO IS
    FUNCTION Verification_Fichier (Adresse : IN String) RETURN Boolean;
 
    -- retourne la fréquence d'échantillonnage
-   FUNCTION Frequence_D_Echantillonnage (Adresse : IN String) RETURN Natural;
+   FUNCTION Frequence_D_Echantillonnage (Adresse : IN String) RETURN Long_Long_Integer;
 
    -- retourne le nombre de bits utilisé pour codé chaque échantillon
    FUNCTION Nb_Bits_Par_Echantillon (Adresse : IN String) RETURN Natural;
@@ -31,7 +31,6 @@ PACKAGE Audio_IO IS
    FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return Tab_TQ;
 
 
-   PROCEDURE Lire_Fichier (Adresse : IN String);
 
 
 

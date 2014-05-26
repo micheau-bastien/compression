@@ -25,6 +25,22 @@ PACKAGE BODY Binary_Tools IS
    END Bin_2_Dec;
 
 
+
+   FUNCTION Big_Bin_2_Dec (Binaire : IN String) RETURN Long_Long_Integer IS
+      Res : Long_Long_Integer := 0;
+      Power : Long_Long_Integer;
+   BEGIN
+      FOR I IN Binaire'RANGE LOOP
+         IF Binaire(I) = '1' THEN
+            Power := 2**(Binaire'Length-I);
+            Res := Res + Power;
+         END IF;
+      END LOOP;
+      RETURN Res;
+   END Big_Bin_2_Dec;
+
+
+
    FUNCTION Miroir (A : IN Natural ; Nb_de_Bits : IN Natural) RETURN Natural IS
       Bin : String := Dec_2_Bin (A,Nb_de_Bits);
       Aux : Character;
