@@ -62,11 +62,11 @@ PACKAGE Fft IS
    FUNCTION Quantification_F (Nb_de_bits : in Positive ; Max : in Float ; Valeurs : Tab_F) return Tab_FQ;
    -- Pour le signal temporel, afin de conserver les nuances, il ne faut pas quantifier chaque frame sur l'échelle pleine
    -- Au Max, on fait correspondre une valeur quantifiée MaxQ
-   FUNCTION Quantification_T (Nb_de_bits : in Positive ; Max : in Float ; MaxQ : in Natural; Valeurs : Tab_T) return Tab_TQ;
+   FUNCTION Quantification_T (Nb_de_bits : in Positive ; Max : in Float ; Ratio : in Float; Valeurs : Tab_T) return Tab_TQ;
 
 
 
    -- fonction qui calcule la TFD a proprement parler
-   FUNCTION TFD (Coeffs : in Tab_TQ ; Expo : in Tab_Exp; Nb_de_bits : in natural) return Resultat_TFD;
+   --FUNCTION TFD (Coeffs : in Tab_TQ ; Expo : in Tab_Exp; Nb_de_bits : in natural) return Resultat_TFD;
 
 end Fft;
