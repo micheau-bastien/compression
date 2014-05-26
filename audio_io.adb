@@ -11,20 +11,20 @@ PACKAGE BODY Audio_IO IS
    -- structure
    -- declaration fichier format wave
    SUBTYPE Riff IS Integer RANGE 1..4;            -- doit être 82-73-70-70 (RIFF)
-   SUBTYPE File_Size IS Integer RANGE 5..8;
+   --SUBTYPE File_Size IS Integer RANGE 5..8;
    SUBTYPE Format_Fichier IS Integer RANGE 9..12; -- doit être 87-65-86-69 (WAVE)
    -- description format audio
    SUBTYPE Format_Bloc IS Integer RANGE 13..16;   -- doit être 102-109-116-32 (FMT )
-   SUBTYPE Bloc_Size IS Integer RANGE 17..20;     -- sur le premier octet
-   SUBTYPE Audio_Format IS Integer RANGE 21..22;  -- doit être 0-1 (pour le wave)
+   --SUBTYPE Bloc_Size IS Integer RANGE 17..20;     -- sur le premier octet
+   --SUBTYPE Audio_Format IS Integer RANGE 21..22;  -- doit être 0-1 (pour le wave)
    SUBTYPE Nb_Canaux IS Integer RANGE 23..24;     -- on ne traite que le cas mono 0-1
    SUBTYPE Frequence_Echantillonnage IS Integer RANGE 25..28;   -- attention, octets en ordre inverse
-   SUBTYPE Octets_Par_Sec IS Integer RANGE 29..32;              -- idem
-   SUBTYPE Octets_Par_Bloc IS Integer RANGE 33..34;             -- idem
+   --SUBTYPE Octets_Par_Sec IS Integer RANGE 29..32;              -- idem
+   --SUBTYPE Octets_Par_Bloc IS Integer RANGE 33..34;             -- idem
    SUBTYPE Bits_Par_Echantillon IS Integer RANGE 35..36;        -- idem
    -- bloc de données
 
- --Le Data_Bloc commence par 100-97-116-97 (DATA)
+ --Le Data_Bloc commence par 100-97-116-97 (data) ou en HEXA : 64-61-74-61
  --et est suivi par le Data_Size sur 4 octets
 
 
@@ -57,7 +57,7 @@ PACKAGE BODY Audio_IO IS
          Txt.Put_Line("Constante RIFF : OK");
       ELSE
          Res := False;
-         Txt.Put_Line("Constante RIFF erronée");
+         Txt.Put_Line("Constante RIFF erronee");
       END IF;
 
       -- vérification format fichier
@@ -78,7 +78,7 @@ PACKAGE BODY Audio_IO IS
       Read(Fichier,Buffer2,Count(Format_Bloc'First+1));
       Read(Fichier,Buffer3,Count(Format_Bloc'First+2));
       Read(Fichier,Buffer4,Count(Format_Bloc'First+3));
-      IF Buffer1 = 'F' AND Buffer2 = 'M' AND Buffer3 = 'T' AND Buffer4 = ' ' THEN
+      IF Buffer1 = 'f' AND Buffer2 = 'm' AND Buffer3 = 't' AND Buffer4 = ' ' THEN
          Txt.Put_Line("Format bloc : OK");
       Else
          Res := False;
@@ -92,7 +92,7 @@ PACKAGE BODY Audio_IO IS
          Txt.Put_Line("Nombre de canaux : MONO");
       ELSE
          Res := False;
-         Txt.Put_Line("Ce fichier n'est pas un fichier MONO, veuillez y remédier s'il vous plait");
+         Txt.Put_Line("Ce fichier n'est pas un fichier MONO, veuillez y remedier s'il vous plait");
       END IF;
 
       Close(Fichier);
@@ -100,7 +100,7 @@ PACKAGE BODY Audio_IO IS
    END Verification_Fichier;
 
 
-   FUNCTION Frequence_d_Echantillonnage (Adresse : IN String) RETURN Natural IS
+   FUNCTION Frequence_d_Echantillonnage (Adresse : IN String) RETURN Long_Long_Integer IS
       Fichier : File_Type;
       Buffer1 : Character;
       Buffer2 : Character;
@@ -108,12 +108,16 @@ PACKAGE BODY Audio_IO IS
       Buffer4 : Character;
    BEGIN
       Open(Fichier,In_File,Adresse);
+
       Read(Fichier,Buffer1,Count(Frequence_Echantillonnage'First));
       Read(Fichier,Buffer2,Count(Frequence_Echantillonnage'First+1));
       Read(Fichier,Buffer3,Count(Frequence_Echantillonnage'First+2));
       Read(Fichier,Buffer4,Count(Frequence_Echantillonnage'First+3));
+
       Close (Fichier);
-      RETURN Bin_2_Dec(Dec_2_Bin(Character'Pos(Buffer4),8)&Dec_2_Bin(Character'Pos(Buffer3),8)&Dec_2_Bin(Character'Pos(Buffer2),8)&Dec_2_Bin(Character'Pos(Buffer1),8));
+
+
+      RETURN Big_Bin_2_Dec(Dec_2_Bin(Character'Pos(Buffer4),8)&Dec_2_Bin(Character'Pos(Buffer3),8)&Dec_2_Bin(Character'Pos(Buffer2),8)&Dec_2_Bin(Character'Pos(Buffer1),8));
    END Frequence_d_Echantillonnage;
 
 
@@ -133,14 +137,14 @@ PACKAGE BODY Audio_IO IS
 
    FUNCTION Amorce_Data_Bloc (Adresse : IN String) RETURN Natural IS
       Fichier : File_Type;
-      Buffer1 : Character := " ";
-      Buffer2 : Character := " ";
-      Buffer3 : Character := " ";
-      Buffer4 : Character := " ";
+      Buffer1 : Character := ' ';
+      Buffer2 : Character := ' ';
+      Buffer3 : Character := ' ';
+      Buffer4 : Character := ' ';
       I : natural := 0;
    BEGIN
       Open(Fichier,In_File,Adresse);
-      WHILE NOT (Buffer1 = 'D' AND Buffer2 = 'A' AND Buffer3 = 'T' AND Buffer4 = 'A') LOOP
+      WHILE NOT (Buffer1 = 'd' AND Buffer2 = 'a' AND Buffer3 = 't' AND Buffer4 = 'a') LOOP
          I := I+1;
          Read(Fichier,Buffer1,Count(I));
          Read(Fichier,Buffer2,Count(I+1));
@@ -152,18 +156,60 @@ PACKAGE BODY Audio_IO IS
    END Amorce_Data_Bloc;
 
 
+   FUNCTION Size_Data_Bloc (Adresse : IN String) RETURN Long_Long_Integer IS
+      Fichier : File_Type;
+      Buffer1 : Character;
+      Buffer2 : Character;
+      Buffer3 : Character;
+      Buffer4 : Character;
+      I : constant natural := Amorce_Data_Bloc(Adresse);
+   BEGIN
+      Open(Fichier,In_File,Adresse);
+      Read(Fichier,Buffer1,Count(I-4));
+      Read(Fichier,Buffer2,Count(I-3));
+      Read(Fichier,Buffer3,Count(I-2));
+      Read(Fichier,Buffer4,Count(I-1));
+      Close (Fichier);
+      RETURN Big_Bin_2_Dec(Dec_2_Bin(Character'Pos(Buffer4),8)&Dec_2_Bin(Character'Pos(Buffer3),8)&Dec_2_Bin(Character'Pos(Buffer2),8)&Dec_2_Bin(Character'Pos(Buffer1),8));
+   END Size_Data_Bloc;
+
+
+
+   FUNCTION Nb_Frames (Adresse : IN String) return Integer IS
+      Taille_Bloc_Donnees : constant Long_Long_Integer := Size_Data_Bloc(Adresse);
+      Octets_par_echantillon : constant Natural := Nb_Bits_Par_Echantillon(Adresse) / 8;
+   BEGIN
+      RETURN Integer(Taille_Bloc_Donnees / (Long_Long_Integer (Octets_Par_Echantillon)*Long_Long_Integer(Frame_Size)));
+   END Nb_Frames;
+
+
+   FUNCTION Natural_2_Integer (Nat : Long_Long_Integer ; Nb_Bits : Natural) RETURN Long_Long_Integer IS
+   BEGIN
+      IF Nat < Long_Long_Integer(2**(Nb_Bits-1)) THEN
+         RETURN Nat;
+      ELSE
+         RETURN Nat-Long_Long_Integer(2**(Nb_Bits)-1);
+      END IF;
+   END Natural_2_Integer;
+
+
+
+
    FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return Tab_TQ is
-      Depart : Natural := Amorce_Data_Bloc (Adresse);
-      Pas : Natural := Nb_Bits_Par_Echantillon (Adresse)/4;
+      Fichier : File_Type;
+      Depart : CONSTANT Natural := Amorce_Data_Bloc (Adresse);
+      Bits : constant Natural := Nb_Bits_Par_Echantillon (Adresse);
+      Pas : constant Natural := Nb_Bits_Par_Echantillon (Adresse)/8;
       Res : Tab_TQ := (others => 0);
-      Buffer : Natural;
+      Buffer : Character;
    BEGIN
       Open(Fichier,In_File,Adresse);
       FOR J IN Res'RANGE LOOP
-         For K in 1..Pas loop
-            Read(Fichier,Buffer,Count(Depart+Numero*Frame_Size-K));
-            Res(J) := Res(J)+Buffer*(16**2)*(K-1);
+         FOR K IN 1..Pas LOOP
+            Read(Fichier,Buffer,Count(Depart+(Numero-1)*Frame_Size+Pas*J+(K-1)));
+            Res(J) := Res(J)+Long_Long_Integer(Character'Pos(Buffer))*Long_Long_Integer(16**(2*(Pas-K)));
          END LOOP;
+         Res(J):=Natural_2_Integer(Res(J),Bits);
       END LOOP;
       Close(Fichier);
       RETURN Res;
