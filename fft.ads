@@ -25,7 +25,7 @@ PACKAGE Fft IS
    -- F : fréquentiel (tableaux de complexes, ou de couple de natural quantifiés)
    -- Q : quantifié (donc tableaux de natural et plus float)
 
-   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Natural;
+   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Long_Long_Integer;
    TYPE Tab_T IS ARRAY (0..Frame_Size-1) OF Float;
 
    TYPE Tab_FQ IS ARRAY (0..Frame_Size-1) OF Natural;
@@ -37,10 +37,18 @@ PACKAGE Fft IS
    -- Pour chaque frame on obtient le spectre échantilloné, et on conserve la valeur maximale
    -- des échantillons temporels, pour ne pas amplifier les parties calmes des morceaux
    -- en mettant toutes les frames au même niveau d'amplitude à la décompression
+   TYPE RATIO IS RECORD
+      Top : Long_Long_Integer;
+      Bottom : Long_Long_Integer;
+   END RECORD;
+
+
+
+
 
    TYPE Resultat_TFD IS RECORD
       Tab : Tab_FQ;
-      Amplitude_Max : Natural;
+      Occupation : Ratio;
    END RECORD;
 
 
@@ -62,11 +70,11 @@ PACKAGE Fft IS
    FUNCTION Quantification_F (Nb_de_bits : in Positive ; Max : in Float ; Valeurs : Tab_F) return Tab_FQ;
    -- Pour le signal temporel, afin de conserver les nuances, il ne faut pas quantifier chaque frame sur l'échelle pleine
    -- Au Max, on fait correspondre une valeur quantifiée MaxQ
-   FUNCTION Quantification_T (Nb_de_bits : in Positive ; Max : in Float ; Ratio : in Float; Valeurs : Tab_T) return Tab_TQ;
+   FUNCTION Quantification_T (Nb_de_bits : in Positive ; Max : in Float ; Occupation : in Ratio; Valeurs : Tab_T) return Tab_TQ;
 
 
 
    -- fonction qui calcule la TFD a proprement parler
-   --FUNCTION TFD (Coeffs : in Tab_TQ ; Expo : in Tab_Exp; Nb_de_bits : in natural) return Resultat_TFD;
+   FUNCTION TFD (Coeffs : in Tab_TQ ; Nb_bits_origine : in Natural ; Expo : in Tab_Exp ; Nb_de_bits : IN natural) return Resultat_TFD;
 
 end Fft;

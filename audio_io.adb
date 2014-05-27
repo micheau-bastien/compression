@@ -195,12 +195,12 @@ PACKAGE BODY Audio_IO IS
 
 
 
-   FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return Tab_TQ is
+   FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return FFT.Tab_TQ is
       Fichier : File_Type;
       Depart : CONSTANT Natural := Amorce_Data_Bloc (Adresse);
       Bits : constant Natural := Nb_Bits_Par_Echantillon (Adresse);
       Pas : constant Natural := Nb_Bits_Par_Echantillon (Adresse)/8;
-      Res : Tab_TQ := (others => 0);
+      Res : FFT.Tab_TQ := (others => 0);
       Buffer : Character;
    BEGIN
       Open(Fichier,In_File,Adresse);

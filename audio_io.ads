@@ -1,3 +1,6 @@
+WITH FFT;
+
+
 PACKAGE Audio_IO IS
 
 
@@ -6,8 +9,6 @@ PACKAGE Audio_IO IS
    Bits_Per_Frame : CONSTANT Natural := 9;
    Frame_Size : CONSTANT Natural := 2**Bits_Per_Frame;
 
-   -- déclaration des types
-   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Long_Long_Integer;
 
 
    -- prototypes
@@ -34,7 +35,7 @@ PACKAGE Audio_IO IS
    FUNCTION Natural_2_Integer (Nat : Long_Long_Integer ; Nb_Bits : Natural) return Long_Long_Integer;
 
    -- retourne la i-ème frame. Fonction non protégé contre les débordements de fichier
-   FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return Tab_TQ;
+   FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return FFT.Tab_TQ;
 
 
 

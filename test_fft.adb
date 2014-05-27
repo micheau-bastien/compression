@@ -1,4 +1,4 @@
-WITH Fft, Ada.Text_IO, ADA.Numerics, ADA.Numerics.Generic_Elementary_Functions;
+WITH AUDIO_IO, Fft, Ada.Text_IO, ADA.Numerics, ADA.Numerics.Generic_Elementary_Functions;
 use fft, Ada.Text_IO;
 
 PROCEDURE Test_Fft IS
@@ -31,12 +31,12 @@ PROCEDURE Test_Fft IS
       Put_Line("1.a Reorganiser un tableau contenant les valeurs de 0 a 511");
       Put_Line("Depart Attendu : 0 256 128 384 64 320");
       FOR I IN T'RANGE LOOP
-         T(I):=I;
+         T(I):=Long_Long_Integer(I);
       END LOOP;
       Reindexe(T);
       Put("Depart Obtenu : ");
       FOR I IN 0..5 LOOP
-         Put(Integer'Image((T(I))));
+         Put(Long_Long_Integer'Image((T(I))));
       END LOOP;
       New_Line;
       Put_Line("-------------------------------------------");
@@ -101,6 +101,7 @@ PROCEDURE Test_Fft IS
    PROCEDURE UT_Quantification_T IS
       Argument : Tab_T;
       Resultat : Tab_TQ;
+      Occup : Ratio := (2,1);
    BEGIN
       Put_Line("-------------------------------------------");
       Put_Line("4 : Test de Quantification_F");
@@ -110,15 +111,39 @@ PROCEDURE Test_Fft IS
       FOR I IN Argument'RANGE LOOP
          Argument(I) := 2.0*(Float(I)/Float(Argument'Last)) - 1.0;
       END LOOP;
-      Resultat := Quantification_T(4,1.0,2.0,Argument);
+      Resultat := Quantification_T(4,1.0,Occup,Argument);
       Put_Line ("Valeur  Valeur quantifiee");
       FOR I IN Argument'Range LOOP
-         Put(Float'Image(Argument(I)) & " " & Integer'Image(Resultat(I))&"       ");
+         Put(Float'Image(Argument(I)) & " " & Long_Long_Integer'Image(Resultat(I))&"       ");
       END LOOP;
       New_line;
       Put_Line("-------------------------------------------");
       New_Line;
    END UT_Quantification_T;
+
+
+   PROCEDURE UT_TFD IS
+      Frame_Test : Tab_TQ := Audio_IO.Frame("sine440HzMono.wav",1);
+      Nb_Bits_Origine : Natural := Audio_IO.Nb_Bits_Par_Echantillon("sine440HzMono.wav");
+      Expon : Tab_Exp := Tab_Expo_TFD;
+      Nb_De_Bits_Sortie : Natural := 8;
+      Res : Resultat_TFD;
+   BEGIN
+      Put_Line("-------------------------------------------");
+      Put_Line("5 : Test de TFD");
+      Put_Line("5.a : TFD sur la première frame d'une sinusoide pure à 440 Hz, quantifie sur 8 bits");
+      Put_Line("Attendu : un pic a une seule frequence");
+      Res := TFD(Frame_Test,Nb_Bits_Origine,Expon,Nb_De_Bits_Sortie);
+      Put_Line("Resultat :");
+      FOR I IN Res.Tab'RANGE LOOP
+         Put_Line(Integer'Image(Res.Tab(I)));
+      END LOOP;
+      Put_Line (Float'Image(Float(Res.Occupation.Top)/Float(Res.Occupation.Bottom)));
+
+      Put_Line("-------------------------------------------");
+      New_Line;
+   END UT_TFD;
+
 
 
 
@@ -132,7 +157,7 @@ BEGIN
 
    UT_Quantification_T;
 
-
+   UT_TFD;
 
 
 
