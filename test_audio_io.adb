@@ -1,4 +1,4 @@
-with Audio_IO, ADA.Text_IO;
+with Audio_IO, ADA.Text_IO, fft;
 use Audio_IO, ADA.Text_IO;
 
 PROCEDURE Test_Audio_Io IS
@@ -174,68 +174,16 @@ PROCEDURE Test_Audio_Io IS
       New_Line;
    END UT_Nb_Frames;
 
-   PROCEDURE UT_Natural_2_Integer IS
-   BEGIN
-      Put_Line("-------------------------------------------");
-      Put_Line("7 : Test de Natural_2_Integer");
-
-      New_Line;
-      Put_Line("   7.a Plus grand entier positif : Natural_2_Integer(32767,16)");
-      Put("Attendu : 32767      ");
-      Put_Line("Resultat : "&Long_Long_Integer'Image(Natural_2_Integer(Long_Long_Integer(32767),16)));
-      IF Natural_2_Integer(32767,16) = Long_Long_Integer(32767) THEN
-         Put_Line("Correct");
-      ELSE
-         Put_Line("Erreur");
-      END IF;
-
-      New_Line;
-      Put_Line("   7.b Le plus petit entier négatif : Natural_2_Integer(32768,16)");
-      Put("Attendu : -32767      ");
-      Put_Line("Resultat : "&Long_Long_Integer'Image(Natural_2_Integer(Long_Long_Integer(32768),16)));
-      IF Natural_2_Integer(32768,16) = Long_Long_Integer(-32767) THEN
-         Put_Line("Correct");
-      ELSE
-         Put_Line("Erreur");
-      END IF;
-
-      New_Line;
-      Put_Line("   7.c Le premier zero: Natural_2_Integer(0,16)");
-      Put("Attendu : 0      ");
-      Put_Line("Resultat : "&Long_Long_Integer'Image(Natural_2_Integer(Long_Long_Integer(0),16)));
-      IF Natural_2_Integer(0,16) = Long_Long_Integer(0) THEN
-         Put_Line("Correct");
-      ELSE
-         Put_Line("Erreur");
-      END IF;
-
-      New_Line;
-      Put_Line("   7.D Le zero: Natural_2_Integer(65535,16)");
-      Put("Attendu : 0      ");
-      Put_Line("Resultat : "&Long_Long_Integer'Image(Natural_2_Integer(Long_Long_Integer(65535),16)));
-      IF Natural_2_Integer(65535,16) = Long_Long_Integer(0) THEN
-         Put_Line("Correct");
-      ELSE
-         Put_Line("Erreur");
-      END IF;
-
-      Put_Line("Resultat : "&Long_Long_Integer'Image(Natural_2_Integer(Long_Long_Integer(34952),16)));
-      Put_Line("Resultat : "&Long_Long_Integer'Image(Natural_2_Integer(Long_Long_Integer(39321),16)));
-
-
-      Put_Line("-------------------------------------------");
-      New_Line;
-   END UT_Natural_2_Integer;
 
    PROCEDURE UT_Frame IS
-      Tab : Tab_TQ;
+      Tab : FFT.Tab_TQ;
       OK : boolean;
    BEGIN
       Put_Line("-------------------------------------------");
-      Put_Line("8 : Test de Frame");
+      Put_Line("7 : Test de Frame");
 
       New_Line;
-      Put_Line("   8.a Fichier dont la première frame est connue : Frame(""test_frame_16bits.wav"",1)");
+      Put_Line("   7.a Fichier dont la première frame est connue : Frame(""test_frame_16bits.wav"",1)");
       Put_Line(" Attendu :");
       Put_Line(" 32 fois chacune des valeurs : codés par 0000, 1111, 2222, 3333, 4444, ..., FFFF en hexadecimal");
       Put_Line(" C'est à dire : 0, 4369, 8738, 13107, 17476, 21845, 26214, 30583, -30583, -26214, -21845, -17476, -13107, -8738, -4368, 0");
@@ -267,9 +215,11 @@ BEGIN
 
    UT_Nb_Frames;
 
-   UT_Natural_2_Integer;
 
    UT_Frame;
+
+   Put_Line(Long_Long_Integer'Image(Long_Long_Integer'Last));
+   Put_Line(Long_Long_Integer'Image(Long_Long_Integer'First));
 
 
 END Test_Audio_Io;

@@ -7,22 +7,22 @@ PACKAGE BODY Fft IS
    -- utilisé dans Reindexe
    type Tab_visite is array (0..Frame_Size-1) of Boolean;
 
-   -- pour utilise exp() (en fait cos() et sin())
+   -- pour utiliser cos() et sin() afin de générer les coefficients exponentiels
    PACKAGE Num IS NEW ADA.Numerics.Generic_Elementary_Functions (Float);
 
+  PI : constant float := ADA.Numerics.Pi;
 
-   PI : constant float := ADA.Numerics.pi;
-
-
-   -- Reorganisation des coefficients du tableau
-
+   -- Pour chaque indice, on calcul son "miroir" en représentation binaire
+   -- puis on les échange, sans oublier de marquer dans un tableau qu'on l'a fait
+   -- afin de ne pas refaire l'échange quand on passe sur l'indice miroir
+   -- Complexité temporelle en O(N) puisqu'on parcourt l'intégralité du tableau
    PROCEDURE Reindexe (A : IN OUT Tab_TQ) IS
-      indice_Miroir : Natural;
+      Indice_Miroir : Natural;
       Aux : Long_Long_Integer;
       Visite : tab_visite := (others => False);
    BEGIN
       FOR I IN A'RANGE LOOP
-         Indice_Miroir := Binary_Tools.Miroir(I,Bits_Per_Frame);
+         Indice_Miroir := Binary_Tools.Miroir(I,Parametre_Frame);
          IF Indice_Miroir /= I AND not Visite(I) THEN
             Aux := A(I);
             A(I) := A(Indice_Miroir);
@@ -34,64 +34,84 @@ PACKAGE BODY Fft IS
 
 
 
-
    -- Calcul des facteurs exponentiels exp(-i*2pi*K/(2^P))
-
+   -- complexité linéaire par rapport à la taille de la matrice
+   -- on pourrait surement optimiser pour ne pas calculer 2 fois le même indice
+   -- la première dimension correspond à la profondeur dans les récursions en quelque sorte
+   -- la 2ème correspond à l'indice du coefficient de la TFD courant
    FUNCTION Tab_Expo_TFD RETURN Tab_Exp IS
       res : Tab_Exp;
    BEGIN
       FOR P IN Res'RANGE(1) LOOP
          FOR K IN Res'RANGE(2) LOOP
-            Res(P,K):=(Num.Cos(PI*Float(2*K)/Float(2**P)),-Num.Sin(PI*Float(2*K)/Float(2**P)));
+            Res(P,K).Re:=Num.Cos(PI*Float(2*K)/Float(2**P));
+            Res(P,K).Im:=-Num.Sin(PI*Float(2*K)/Float(2**P));
          END LOOP;
       END LOOP;
       RETURN Res;
    END Tab_Expo_TFD;
 
 
+   -- Calcul des facteurs exponentiels exp(i*2pi*K/(2^P))
+   -- idem
+
+   FUNCTION Tab_Expo_TFD_Inverse RETURN Tab_Exp_Inverse IS
+      res : Tab_Exp_Inverse;
+   BEGIN
+      FOR P IN Res'RANGE(1) LOOP
+         FOR K IN Res'RANGE(2) LOOP
+            Res(P,K).Re:=Num.Cos(PI*Float(2*K)/Float(2**P));
+            Res(P,K).Im:=Num.Sin(PI*Float(2*K)/Float(2**P));
+         END LOOP;
+      END LOOP;
+      RETURN Res;
+   END Tab_Expo_TFD_Inverse;
 
 
+   -- La quantification n'est qu'une projection sur l'échelle souhaitée puis une troncature
+   -- Le besoin de séparer positifs et négatifs et inhérents à la façon dont sont codé les entiers signés
+   -- dans les fichiers sonores
+   -- Les positifs sont quantifiés de 0 à 2^(Nb_De_Bits-1)-1 par ordre croissant
+   -- Les négatifs sont quantifiés de 2^(Nb_De_Bits-1) à 2^Nb_De_Bits -1 par ordre décroissant en valeur absolue
+   -- Plus visuel : 0 1 2 3 4 -4 -3 -2 -1 0 (il y a 2 zéros)
+   -- complexité linéaire
    FUNCTION Quantification_F (Nb_De_Bits : IN Positive ; Max : IN Float ; Valeurs : Tab_F) RETURN Tab_FQ IS
       Res : Tab_FQ;
-      Pas : constant Float := 2.0*Max/(2.0**Nb_De_Bits);
+      Pas : CONSTANT Float := Max/(2.0**(Nb_De_Bits-1));
+      -- on a un cas particulier pour les extrémits Max et -Max qui sont codés puis rectifiés
    BEGIN
       FOR I IN Valeurs'RANGE LOOP
+         -- Partie Réelle
          IF Valeurs(I).Re >= 0.0 THEN
-            -- Un peu sale mais je vois pas comment faire autrement
             Res (2*I) := Integer(Float'Floor((Valeurs(I).Re)/Pas));
             IF Res(2*I) = 2**(Nb_De_Bits-1) THEN
                Res(2*I) := 2**(Nb_De_Bits-1)-1;
             END IF;
-
          ELSE
-            -- ici il y a parfois une erreur de calcul, avec Res(2*I) qui vaut 2^Nb_De_Bits alors que c'est impossible puisque (2.0**Nb_De_Bits)+Valeurs(I).Re/Pas) < (2.0**Nb_De_Bits)
             Res (2*I) := Integer(Float'Floor((2.0**Nb_De_Bits)+Valeurs(I).Re/Pas));
-            -- d'où la vérification suivante, qui ralentit cependant l'opération :
             IF Res(2*I) = 2**Nb_De_Bits THEN
                Res(2*I) := 2**Nb_De_Bits-1;
             END IF;
          END IF;
 
+         -- Partie Imaginaire
          IF Valeurs(I).Im >= 0.0 THEN
             Res (2*I+1) := Integer(Float'Floor((Valeurs(I).Im)/Pas));
             IF Res(2*I+1) = 2**(Nb_De_Bits-1) THEN
                Res(2*I+1) := 2**(Nb_De_Bits-1)-1;
             END IF;
-
          ELSE
-            -- idem
             Res (2*I+1) := Integer(Float'Floor((2.0**Nb_De_Bits)+Valeurs(I).Im/Pas));
             IF Res(2*I+1) = 2**Nb_De_Bits THEN
                Res(2*I+1) := 2**Nb_De_Bits-1;
             END IF;
-
          END IF;
       END LOOP;
       Return res;
    END Quantification_F;
 
 
-
+-- idem mais on utilise le ratio pour restituer la nuance
    FUNCTION Quantification_T (Nb_De_Bits : IN Positive ; Max : IN Float ; Occupation : in Ratio; Valeurs : Tab_T) RETURN Tab_TQ IS
       Res : Tab_TQ;
       RealMax : constant Float := Float(Occupation.Top)*Max*Float(Occupation.bottom);
@@ -102,15 +122,14 @@ PACKAGE BODY Fft IS
             Res (I) := Long_Long_Integer(Float'Floor((Valeurs(I))/Pas));
          ELSE
             Res(I) := Long_Long_Integer(Float'Floor((2.0**Nb_De_Bits)+Valeurs(I)/Pas));
-            -- idem
             IF Res(I) = 2**Nb_De_Bits THEN
                Res(I) := 2**Nb_De_Bits-1;
             END IF;
          END IF;
-
       END LOOP;
       Return res;
    END Quantification_T;
+
 
 
 
@@ -139,7 +158,7 @@ PACKAGE BODY Fft IS
 
 
          -- et puis on itère jusqu'à n'avoir plus qu'une valeur
-         FOR J IN 1..Bits_per_Frame LOOP
+         FOR J IN 1..Parametre_Frame LOOP
             FOR I IN 0..Frame_Size/(2**(J+1))-1 LOOP
                Travail((2**(J))*I) := Travail((2**J)*I) + (Expo(J,K) * Travail(((2**J)*I+2**(J-1))));
             END LOOP;
@@ -154,7 +173,44 @@ PACKAGE BODY Fft IS
 
       END LOOP;
      RETURN (Quantification_F (Nb_de_Bits, Maximum, Pre_Quantification), Res.Occupation);
-  END TFD;
+   END TFD;
+
+
+   FUNCTION ITFD (Coeffs : IN Resultat_TFD ; Expo : IN Tab_Exp_Inverse ; Nb_de_bits : IN natural) RETURN Tab_TQ IS
+      Travail : Tab_F;
+      Pre_Quantification : Tab_T;
+      Maximum : Float := 0.0;
+   BEGIN
+
+
+      FOR K IN Pre_Quantification'RANGE LOOP
+         -- première itération pour remplir le tableau de travail
+         -- on utilise la symétrie des coefficients
+         FOR I IN 0..(Half_Frame_Size/2)-1 LOOP
+            Travail(I) := (Float(Coeffs.Tab(4*I)),Float(Coeffs.Tab(4*I+1))) + (Float(Coeffs.Tab(4*I+2)),Float(Coeffs.Tab(4*I+3)))*Expo(1,K);
+            Travail(Half_Frame_Size-1-I) := (Float(Coeffs.Tab(4*I)),Float(-Coeffs.Tab(4*I+1))) + (Float(Coeffs.Tab(4*I+2)),Float(-Coeffs.Tab(4*I+3)))*Expo(1,K);
+         END LOOP;
+
+
+         -- et puis on itère jusqu'à n'avoir plus qu'une valeur
+         FOR J IN 1..Parametre_Frame LOOP
+            FOR I IN 0..Frame_Size/(2**(J+1))-1 LOOP
+               Travail((2**(J))*I) := Travail((2**J)*I) + (Expo(J,K) * Travail(((2**J)*I+2**(J-1))));
+            END LOOP;
+         END LOOP;
+         Pre_Quantification(K) := Travail(0).Re;
+         IF Abs(Travail(0).Re) > Maximum THEN
+            Maximum := Abs(Travail(0).Re);
+         END IF;
+         IF ABS(Travail(0).Im) > Maximum THEN
+            Maximum := Abs(Travail(0).Im);
+         END IF;
+
+      END LOOP;
+     RETURN Quantification_T (Nb_de_Bits, Maximum, Coeffs.Occupation, Pre_Quantification);
+  END ITFD;
+
+
 
 
 

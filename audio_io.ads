@@ -31,12 +31,10 @@ PACKAGE Audio_IO IS
    -- retourne le nombre de frames
    FUNCTION Nb_Frames (Adresse : IN String) RETURN Integer;
 
-   -- transforme les naturals lu dans le bloc de données en integer qu'on est sensé lire
-   FUNCTION Natural_2_Integer (Nat : Long_Long_Integer ; Nb_Bits : Natural) return Long_Long_Integer;
-
    -- retourne la i-ème frame. Fonction non protégé contre les débordements de fichier
    FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return FFT.Tab_TQ;
 
+   --Function Creer_Fichier(Adresse : IN String ; Freq_Echantillonnage : Integer
 
 
 end Audio_IO;

@@ -183,17 +183,6 @@ PACKAGE BODY Audio_IO IS
    END Nb_Frames;
 
 
-   FUNCTION Natural_2_Integer (Nat : Long_Long_Integer ; Nb_Bits : Natural) RETURN Long_Long_Integer IS
-   BEGIN
-      IF Nat < Long_Long_Integer(2**(Nb_Bits-1)) THEN
-         RETURN Nat;
-      ELSE
-         RETURN Nat-Long_Long_Integer(2**(Nb_Bits)-1);
-      END IF;
-   END Natural_2_Integer;
-
-
-
 
    FUNCTION Frame(Adresse : IN String ; Numero : IN natural) return FFT.Tab_TQ is
       Fichier : File_Type;

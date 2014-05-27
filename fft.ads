@@ -14,43 +14,45 @@ PACKAGE Fft IS
 
 
    -- constantes pour définir la taille des frames sur lesquels la TFD travaille
-
-   Bits_per_Frame : CONSTANT Natural := 9;
-   Frame_Size : CONSTANT Natural := 2**Bits_per_Frame;
-   Half_Frame_Size : CONSTANT Natural := 2**(Bits_per_Frame-1);
+   Parametre_Frame : CONSTANT Natural := 3;
+   Frame_Size : CONSTANT Natural := 2**Parametre_Frame;
+   Half_Frame_Size : CONSTANT Natural := 2**(Parametre_Frame-1);
 
 
    -- tous les types tableaux sur lesquels on va travailler
-   -- T : temporel (tableaux de réel car notre signal l'est, ou de natural quantifiés)
+   -- T : temporel (tableaux de réel car notre signal l'est, ou d'entiersquantifiés)
    -- F : fréquentiel (tableaux de complexes, ou de couple de natural quantifiés)
    -- Q : quantifié (donc tableaux de natural et plus float)
 
    TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Long_Long_Integer;
+   -- Si le signal d'origine est quantifié sur 32 bits par exemple, on obtient un overflow en utilisant
+   -- des integer, d'où l'utilisation des Long_Long_Integer
    TYPE Tab_T IS ARRAY (0..Frame_Size-1) OF Float;
 
    TYPE Tab_FQ IS ARRAY (0..Frame_Size-1) OF Natural;
+   -- En revanche, le but étant de réduire la taille du fichier, on quantifiera toujours sur 16 bits ou moins,
+   -- donc pas d'overflow sur des Natural
    TYPE Tab_F IS ARRAY (0..Half_Frame_Size-1) OF Complex;
 
-   TYPE Tab_Exp IS ARRAY(1..Bits_per_Frame,0..Half_Frame_Size-1) of Complex;
+   TYPE Tab_Exp IS ARRAY(1..Parametre_Frame,0..Half_Frame_Size-1) OF Complex;
+
+   TYPE Tab_Exp_Inverse IS ARRAY(1..Parametre_Frame,0..Frame_Size-1) OF Complex;
 
 
-   -- Pour chaque frame on obtient le spectre échantilloné, et on conserve la valeur maximale
-   -- des échantillons temporels, pour ne pas amplifier les parties calmes des morceaux
-   -- en mettant toutes les frames au même niveau d'amplitude à la décompression
+   -- Pour chaque frame on obtient le spectre échantilloné, et quantifié.
+   -- Lorsqu'on va appliquer la transformation inverse, on aura amplifier le signal à cause de la quantification
+   -- c'est pourquoi on conserve le ratio entre la valeur maximum de la frame en entrée et la valeur maximal de quantification
+   -- de façon à restituer les nuances
    TYPE RATIO IS RECORD
       Top : Long_Long_Integer;
       Bottom : Long_Long_Integer;
    END RECORD;
 
-
-
-
-
+   -- Pour chaque frame traitée, on garde donc le tableau, et le ratio
    TYPE Resultat_TFD IS RECORD
       Tab : Tab_FQ;
       Occupation : Ratio;
    END RECORD;
-
 
 
 
@@ -65,6 +67,9 @@ PACKAGE Fft IS
    -- Retourne un tableau contenant les facteurs exponentiels pour la TFD
    FUNCTION Tab_Expo_TFD RETURN Tab_Exp;
 
+   -- Retourne un tableau contenant les facteurs exponentiels pour la TFD inverse
+   FUNCTION Tab_Expo_TFD_Inverse return Tab_Exp_Inverse;
+
    -- Fonctions de quantification
    -- Pour le spectre, on quantifie l'intervalle [-Max,Max] sur l'échelle pleine de 0 à 2^Nb_de_bits
    FUNCTION Quantification_F (Nb_de_bits : in Positive ; Max : in Float ; Valeurs : Tab_F) return Tab_FQ;
@@ -76,5 +81,8 @@ PACKAGE Fft IS
 
    -- fonction qui calcule la TFD a proprement parler
    FUNCTION TFD (Coeffs : in Tab_TQ ; Nb_bits_origine : in Natural ; Expo : in Tab_Exp ; Nb_de_bits : IN natural) return Resultat_TFD;
+
+   -- fonction qui inverse la TFD
+   FUNCTION ITFD (Coeffs : in Resultat_TFD ; Expo : in Tab_Exp_Inverse ; Nb_de_bits : in Natural) return Tab_TQ;
 
 end Fft;

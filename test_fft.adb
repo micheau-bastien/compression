@@ -126,8 +126,10 @@ PROCEDURE Test_Fft IS
       Frame_Test : Tab_TQ := Audio_IO.Frame("sine440HzMono.wav",1);
       Nb_Bits_Origine : Natural := Audio_IO.Nb_Bits_Par_Echantillon("sine440HzMono.wav");
       Expon : Tab_Exp := Tab_Expo_TFD;
+      Expon_I : Tab_Exp_Inverse := Tab_Expo_TFD_Inverse;
       Nb_De_Bits_Sortie : Natural := 8;
       Res : Resultat_TFD;
+      Res_Inverse : Tab_TQ;
    BEGIN
       Put_Line("-------------------------------------------");
       Put_Line("5 : Test de TFD");
@@ -135,8 +137,11 @@ PROCEDURE Test_Fft IS
       Put_Line("Attendu : un pic a une seule frequence");
       Res := TFD(Frame_Test,Nb_Bits_Origine,Expon,Nb_De_Bits_Sortie);
       Put_Line("Resultat :");
-      FOR I IN Res.Tab'RANGE LOOP
-         Put_Line(Integer'Image(Res.Tab(I)));
+      Res_Inverse := ITFD(Res,Expon_I,Nb_Bits_Origine);
+
+      FOR I IN Frame_Test'RANGE LOOP
+         Put(Long_Long_Integer'Image(Frame_Test(I)));
+         Put_Line(Long_Long_Integer'Image(Res_Inverse(I)));
       END LOOP;
       Put_Line (Float'Image(Float(Res.Occupation.Top)/Float(Res.Occupation.Bottom)));
 
