@@ -112,4 +112,23 @@ PACKAGE BODY Binary_Tools IS
       RETURN Bin_2_Dec(Bin);
    END Miroir;
 
+
+   FUNCTION Decompose (A : Natural ; N : Positive) RETURN Natural IS
+      Bin : CONSTANT String := Dec_2_Bin (A,31);
+      Res : String (1..8);
+   BEGIN
+      Res := Bin(Bin'Last+1-N*8..Bin'Last-(N-1)*8);
+      RETURN Bin_2_Dec(Res);
+   END Decompose;
+
+
+   FUNCTION Big_Decompose (A : Big_Natural ; N : Positive) RETURN Natural IS
+      Bin : CONSTANT String := Big_Dec_2_Bin (A,62);
+      Res : String (1..8);
+   BEGIN
+      Res := Bin(Bin'Last+1-N*8..Bin'Last-(N-1)*8);
+      RETURN Bin_2_Dec(Res);
+   END Big_Decompose;
+
+
   END Binary_Tools;

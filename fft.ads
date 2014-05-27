@@ -14,7 +14,7 @@ PACKAGE Fft IS
 
 
    -- constantes pour définir la taille des frames sur lesquels la TFD travaille
-   Parametre_Frame : CONSTANT Natural := 3;
+   Parametre_Frame : CONSTANT Natural := 9;
    Frame_Size : CONSTANT Natural := 2**Parametre_Frame;
    Half_Frame_Size : CONSTANT Natural := 2**(Parametre_Frame-1);
 

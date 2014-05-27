@@ -23,5 +23,9 @@ PACKAGE Binary_Tools IS
    -- Renvoie le natural dont l'expression binaire est le symétrique de celle de l'argument
    FUNCTION Miroir (A : IN Natural ; Nb_de_Bits : IN Natural) RETURN Natural;
 
+   -- Si l'on souhaite coder A sur X<=3 octets, Renvoie le naturel correspondant au N_ième octet
+   FUNCTION Decompose (A : Natural ; N : Positive) RETURN Natural;
+   -- et pour les Big_Natural, X<=7 octets
+   FUNCTION Big_Decompose (A : Big_Natural ; N : Positive) RETURN Natural;
 
 end Binary_Tools;

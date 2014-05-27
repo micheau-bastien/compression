@@ -66,7 +66,7 @@ Procedure Test_Binary_Tools IS
       END IF;
       --------------------------------------------------------
       New_Line;
-      Put_Line("   b. Le zéro : Dec_2_Bin(""0000000"")");
+      Put_Line("   b. Le zero : Bin_2_Dec(""0000000"")");
       Put("Attendu : 0      ");
       Put_Line("Resultat : " & Integer'Image(Bin_2_Dec("0000000")));
       IF Bin_2_Dec("0000000") = 0 THEN
@@ -74,6 +74,17 @@ Procedure Test_Binary_Tools IS
       ELSE
          Put_Line("Erreur");
       END IF;
+      --------------------------------------------------------
+      New_Line;
+      Put_Line("   c. Bin_2_Dec(""10101011"")");
+      Put("Attendu : 171      ");
+      Put_Line("Resultat : " & Integer'Image(Bin_2_Dec("10101011")));
+      IF Bin_2_Dec("10101011") = 171 THEN
+         Put_Line("Correct");
+      ELSE
+         Put_Line("Erreur");
+      END IF;
+
       --------------------------------------------------------
       Put_Line("-------------------------------------------");
       New_Line;
@@ -339,10 +350,10 @@ Procedure Test_Binary_Tools IS
    PROCEDURE UT_Miroir IS
    BEGIN
       Put_Line("-------------------------------------------");
-      Put_Line("4 : Test de Miroir");
-
+      Put_Line("Test de Miroir");
+      --------------------------------------------------------
       New_Line;
-      Put("   4.a Miroir(16,5)  ");
+      Put("   a. Miroir(16,5)  ");
       Put_Line("Soit en binaire : " & Dec_2_Bin(16,5));
       Put("Attendu : 1      ");
       Put_Line("Soit en binaire : 00001");
@@ -352,9 +363,9 @@ Procedure Test_Binary_Tools IS
       ELSE
          Put_Line("Erreur");
       END IF;
-
+      --------------------------------------------------------
       New_Line;
-      Put("   4.b Miroir(15,4)");
+      Put("   b. Miroir(15,4)");
       Put_Line("Soit en binaire : " & Dec_2_Bin(15,4));
       Put("Attendu : 15      ");
       Put_Line("Soit en binaire : 1111");
@@ -364,10 +375,61 @@ Procedure Test_Binary_Tools IS
       ELSE
          Put_Line("Erreur");
       END IF;
+      --------------------------------------------------------
       Put_Line("-------------------------------------------");
       New_Line;
 
    END UT_Miroir;
+
+
+
+
+   PROCEDURE UT_Decompose IS
+   BEGIN
+      Put_Line("-------------------------------------------");
+      Put_Line("Test de Decompose");
+
+      New_Line;
+      Put_Line("   a. Decompose(15715755,I) pour I de 1 a 3");
+      Put_Line("Attendu :" & Natural'Image(171) & Natural'Image(205) & Natural'Image(239));
+      Put("Resultat : ");
+      Put_Line(Natural'Image(Decompose(15715755,1)) & Natural'Image(Decompose(15715755,2)) & Natural'Image(Decompose(15715755,3)));
+      IF (Decompose(15715755,1) = 171) AND (Decompose(15715755,2) = 205) AND (Decompose(15715755,3) = 239)   THEN
+         Put_Line("Correct");
+      ELSE
+         Put_Line("Erreur");
+      END IF;
+      --------------------------------------------------------
+      Put_Line("-------------------------------------------");
+      New_Line;
+   END UT_Decompose;
+
+
+   PROCEDURE UT_Big_Decompose IS
+   BEGIN
+      Put_Line("-------------------------------------------");
+      Put_Line("Test de Big_Decompose");
+
+      New_Line;
+      Put_Line("   a. Big_Decompose(Big_Natural(44100),I) pour I de 1 a 4");
+      Put_Line("Attendu :" & Natural'Image(68) & Natural'Image(172) & Natural'Image(0) & Natural'Image(0));
+      Put("Resultat : ");
+      Put_Line(Natural'Image(Big_Decompose(Big_Natural(44100),1))
+         & Natural'Image(Big_Decompose(Big_Natural(44100),2))
+         & Natural'Image(Big_Decompose(Big_Natural(44100),3))
+         & Natural'Image(Big_Decompose(Big_Natural(44100),4)));
+      IF (Big_Decompose(Big_Natural(44100),1) = 68)
+            AND (Big_Decompose(Big_Natural(44100),2) = 172)
+            AND (Big_Decompose(Big_Natural(44100),3) = 0)
+            AND (Big_Decompose(Big_Natural(44100),4) = 0) THEN
+         Put_Line("Correct");
+      ELSE
+         Put_Line("Erreur");
+      END IF;
+      --------------------------------------------------------
+      Put_Line("-------------------------------------------");
+      New_Line;
+   END UT_Big_Decompose;
 
 
 
@@ -395,6 +457,10 @@ BEGIN
    UT_Big_Non_Signe;
 
    UT_Miroir;
+
+   UT_Decompose;
+
+   UT_Big_Decompose;
 
 END Test_Binary_Tools;
 
