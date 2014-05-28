@@ -216,8 +216,8 @@ PACKAGE BODY Audio_IO IS
       Open(Fichier,In_File,Adresse);
       FOR J IN Res'RANGE LOOP
          FOR K IN 1..Pas LOOP
-            Read(Fichier,Buffer,Count(Depart+(Numero-1)*Frame_Size+Pas*J+(K-1)));
-            Res(J) := Res(J)+Long_Long_Integer(Character'Pos(Buffer))*Long_Long_Integer(16**(2*(Pas-K)));
+            Read(Fichier,Buffer,Count(Depart+(Numero-1)*Frame_Size*Pas+Pas*J+(K-1)));
+            Res(J) := Res(J)+Long_Long_Integer(Character'Pos(Buffer))*Long_Long_Integer(16**(2*(K-1)));
          END LOOP;
          Res(J):=Big_Signe(Res(J),Bits);
       END LOOP;
@@ -314,7 +314,6 @@ PACKAGE BODY Audio_IO IS
       Index := Natural(Size(Fichier));
       For I in Frame'Range loop
          FOR J IN 1..Octet_Par_Echantillon LOOP
-            Txt.Put_Line(Integer'Image(I)&Integer'Image(J)&Char_2_String(Character'Val(Big_Decompose(Big_Non_Signe(Frame(I),Octet_Par_Echantillon*8),J))));
             Write(Fichier,Character'Val(Big_Decompose(Big_Non_Signe(Frame(I),Octet_Par_Echantillon*8),J)), count(Index+I*Octet_par_echantillon+J));
          END LOOP;
       END LOOP;

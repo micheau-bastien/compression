@@ -192,10 +192,11 @@ PROCEDURE Test_Audio_Io IS
       Put_Line("   a. recopie un fichier wav ");
       Creer_Fichier("copie.wav",Frequence_D_Echantillonnage("sine440HzMono.wav"),Nb_Bits_Par_Echantillon("sine440HzMono.wav"));
       Put_Line("Fichier cree");
-      Copie := Lire_Frame("sine440HzMono.wav",1);
-      Put_Line("Frame copiee");
-      Ajouter_Frame("copie.wav", Copie);
-      Put_Line("Frame collee");
+      FOR I IN 1..Nb_Frames("sine440HzMono.wav") LOOP
+         Copie := Lire_Frame("sine440HzMono.wav",I);
+         Ajouter_Frame("copie.wav", Copie);
+      END LOOP;
+      Put_Line("verifier avec un editeur hexa");
       -------------------------------------------
       Put_Line("-------------------------------------------");
       New_Line;
