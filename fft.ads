@@ -51,9 +51,16 @@ PACKAGE Fft IS
 
    -- Pour chaque frame traitée, on garde donc le tableau, et le ratio
    TYPE Resultat_TFD IS RECORD
-      Tab : Tab_FQ;
+      Tab : Tab_F;
       Occupation : Ratio;
+      Maximum : Float;
    END RECORD;
+
+   TYPE Resultat_ITFD IS RECORD
+      Tab : Tab_T;
+      Maximum : Float;
+   END RECORD;
+
 
 
 
@@ -81,9 +88,9 @@ PACKAGE Fft IS
 
 
    -- fonction qui calcule la TFD a proprement parler
-   FUNCTION TFD (Coeffs : in Tab_TQ ; Nb_bits_origine : in Natural ; Expo : in Tab_Exp ; Nb_de_bits : IN natural) return Resultat_TFD;
+   FUNCTION TFD (Coeffs : in Tab_TQ ; Nb_bits_origine : in Natural ; Expo : in Tab_Exp) return Resultat_TFD;
 
    -- fonction qui inverse la TFD
-   FUNCTION ITFD (Coeffs : in Resultat_TFD ; Expo : in Tab_Exp_Inverse ; Nb_de_bits : in Natural) return Tab_TQ;
+   FUNCTION ITFD (Coeffs : in Tab_FQ ; Expo : in Tab_Exp_Inverse ; Nb_de_bits : in Natural) return Resultat_ITFD;
 
 end Fft;

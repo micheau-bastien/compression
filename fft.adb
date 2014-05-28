@@ -114,24 +114,23 @@ PACKAGE BODY Fft IS
 
 
 
-   FUNCTION TFD (Coeffs : IN Tab_TQ ; Nb_bits_origine : in natural ; Expo : IN Tab_Exp ; Nb_de_bits : IN natural) RETURN Resultat_TFD IS
+   FUNCTION TFD (Coeffs : IN Tab_TQ ; Nb_bits_origine : IN natural ; Expo : IN Tab_Exp) RETURN Resultat_TFD IS
       Travail : Tab_F;
       Res : Resultat_TFD;
-      Pre_Quantification : Tab_F;
-      Maximum : Float:=0.0;
       Ampli_Max : Long_Long_Integer := 0;
    BEGIN
-      -- calcul du ration d'occupation en amplitude
+      -- calcul du ratio d'occupation en amplitude
+      Res.Maximum :=0.0;
       FOR I IN Coeffs'RANGE LOOP
          IF ABS(Coeffs(I)) > Ampli_Max THEN
             Ampli_Max := ABS(Coeffs(I));
          END IF;
       END LOOP;
-      Res.Occupation := (Ampli_Max,Long_Long_Integer(2**(Nb_Bits_Origine-1)-1));
+      Res.Occupation := (Ampli_Max,Big_Natural(2**(Nb_Bits_Origine-1)-1));
 
 
 
-      FOR K IN Pre_Quantification'RANGE LOOP
+      FOR K IN Res.Tab'RANGE LOOP
          -- première itération pour remplir le tableau de travail
          FOR I IN Travail'RANGE LOOP
             Travail(I) := Float(Coeffs(2*I)) + Float(Coeffs(2*I+1))*Expo(1,K);
@@ -144,32 +143,32 @@ PACKAGE BODY Fft IS
                Travail((2**(J))*I) := Travail((2**J)*I) + (Expo(J,K) * Travail(((2**J)*I+2**(J-1))));
             END LOOP;
          END LOOP;
-         Pre_Quantification(K) := Travail(0);
-         IF Abs(Travail(0).Re) > Maximum THEN
-            Maximum := Abs(Travail(0).Re);
+         Res.Tab(K) := Travail(0);
+         IF Abs(Travail(0).Re) > Res.Maximum THEN
+            Res.Maximum := Abs(Travail(0).Re);
          END IF;
-         IF ABS(Travail(0).Im) > Maximum THEN
-            Maximum := Abs(Travail(0).Im);
+         IF ABS(Travail(0).Im) > Res.Maximum THEN
+            Res.Maximum := Abs(Travail(0).Im);
          END IF;
 
       END LOOP;
-     RETURN (Quantification_F (Nb_de_Bits, Maximum, Pre_Quantification), Res.Occupation);
+     RETURN Res;
    END TFD;
 
 
-   FUNCTION ITFD (Coeffs : IN Resultat_TFD ; Expo : IN Tab_Exp_Inverse ; Nb_de_bits : IN natural) RETURN Tab_TQ IS
+   FUNCTION ITFD (Coeffs : IN Tab_FQ ; Expo : IN Tab_Exp_Inverse ; Nb_de_bits : IN natural) RETURN Resultat_ITFD IS
       Travail : Tab_F;
-      Pre_Quantification : Tab_T;
-      Maximum : Float := 0.0;
+
+      Res : Resultat_ITFD;
    BEGIN
+      Res.Maximum := 0.0;
 
-
-      FOR K IN Pre_Quantification'RANGE LOOP
+      FOR K IN Res.Tab'RANGE LOOP
          -- première itération pour remplir le tableau de travail
          -- on utilise la symétrie des coefficients
          FOR I IN 0..(Half_Frame_Size/2)-1 LOOP
-            Travail(I) := (Float(Coeffs.Tab(4*I)),Float(Coeffs.Tab(4*I+1))) + (Float(Coeffs.Tab(4*I+2)),Float(Coeffs.Tab(4*I+3)))*Expo(1,K);
-            Travail(Half_Frame_Size-1-I) := (Float(Coeffs.Tab(4*I)),Float(-Coeffs.Tab(4*I+1))) + (Float(Coeffs.Tab(4*I+2)),Float(-Coeffs.Tab(4*I+3)))*Expo(1,K);
+            Travail(I) := (Float(Coeffs(4*I)),Float(Coeffs(4*I+1))) + (Float(Coeffs(4*I+2)),Float(Coeffs(4*I+3)))*Expo(1,K);
+            Travail(Half_Frame_Size-1-I) := (Float(Coeffs(4*I)),Float(-Coeffs(4*I+1))) + (Float(Coeffs(4*I+2)),Float(-Coeffs(4*I+3)))*Expo(1,K);
          END LOOP;
 
 
@@ -179,16 +178,13 @@ PACKAGE BODY Fft IS
                Travail((2**(J))*I) := Travail((2**J)*I) + (Expo(J,K) * Travail(((2**J)*I+2**(J-1))));
             END LOOP;
          END LOOP;
-         Pre_Quantification(K) := Travail(0).Re;
-         IF Abs(Travail(0).Re) > Maximum THEN
-            Maximum := Abs(Travail(0).Re);
-         END IF;
-         IF ABS(Travail(0).Im) > Maximum THEN
-            Maximum := Abs(Travail(0).Im);
-         END IF;
 
+         Res.Tab(K) := (Travail(0).Re)/Float(Res.Tab'Length);
+         IF Abs(Res.Tab(K)) > Res.Maximum THEN
+            Res.Maximum := Abs(Travail(0).Re);
+         END IF;
       END LOOP;
-     RETURN Quantification_T (Nb_de_Bits, Maximum, Coeffs.Occupation, Pre_Quantification);
+     RETURN Res;
   END ITFD;
 
 
