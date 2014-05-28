@@ -1,4 +1,4 @@
-WITH ADA.Numerics.Generic_Elementary_Functions,ADA.Text_IO,ADA.Numerics,Binary_Tools;
+WITH ADA.Numerics.Generic_Elementary_Functions,ADA.Text_IO,ADA.Numerics;
 use ADA.Text_IO;
 
 
@@ -12,9 +12,7 @@ PACKAGE BODY Fft IS
 
   PI : constant float := ADA.Numerics.Pi;
 
-   -- Pour chaque indice, on calcul son "miroir" en représentation binaire
-   -- puis on les échange, sans oublier de marquer dans un tableau qu'on l'a fait
-   -- afin de ne pas refaire l'échange quand on passe sur l'indice miroir
+   -- prépare le tableau A pour effectuer une FFT itérative
    -- Complexité temporelle en O(N) puisqu'on parcourt l'intégralité du tableau
    PROCEDURE Reindexe (A : IN OUT Tab_TQ) IS
       Indice_Miroir : Natural;
@@ -77,34 +75,20 @@ PACKAGE BODY Fft IS
    -- complexité linéaire
    FUNCTION Quantification_F (Nb_De_Bits : IN Positive ; Max : IN Float ; Valeurs : Tab_F) RETURN Tab_FQ IS
       Res : Tab_FQ;
-      Pas : CONSTANT Float := Max/(2.0**(Nb_De_Bits-1));
-      -- on a un cas particulier pour les extrémits Max et -Max qui sont codés puis rectifiés
-   BEGIN
+      Pas : CONSTANT Float := Max/(2.0**(Nb_De_Bits-1));   BEGIN
       FOR I IN Valeurs'RANGE LOOP
          -- Partie Réelle
          IF Valeurs(I).Re >= 0.0 THEN
-            Res (2*I) := Integer(Float'Floor((Valeurs(I).Re)/Pas));
-            IF Res(2*I) = 2**(Nb_De_Bits-1) THEN
-               Res(2*I) := 2**(Nb_De_Bits-1)-1;
-            END IF;
+            Res (2*I) := Natural(Float'Ceiling(Valeurs(I).Re/Pas)-1.0);
          ELSE
-            Res (2*I) := Integer(Float'Floor((2.0**Nb_De_Bits)+Valeurs(I).Re/Pas));
-            IF Res(2*I) = 2**Nb_De_Bits THEN
-               Res(2*I) := 2**Nb_De_Bits-1;
-            END IF;
+            Res (2*I) := 2**(Nb_de_Bits)-1-Natural(Float'Ceiling(-Valeurs(I).Re/Pas)-1.0);
          END IF;
 
          -- Partie Imaginaire
          IF Valeurs(I).Im >= 0.0 THEN
-            Res (2*I+1) := Integer(Float'Floor((Valeurs(I).Im)/Pas));
-            IF Res(2*I+1) = 2**(Nb_De_Bits-1) THEN
-               Res(2*I+1) := 2**(Nb_De_Bits-1)-1;
-            END IF;
+            Res (2*I+1) := Natural(Float'Ceiling(Valeurs(I).Im/Pas)-1.0);
          ELSE
-            Res (2*I+1) := Integer(Float'Floor((2.0**Nb_De_Bits)+Valeurs(I).Im/Pas));
-            IF Res(2*I+1) = 2**Nb_De_Bits THEN
-               Res(2*I+1) := 2**Nb_De_Bits-1;
-            END IF;
+            Res (2*I+1) := 2**(Nb_De_Bits)-1-Natural(Float'Ceiling(-Valeurs(I).Im/Pas)-1.0);
          END IF;
       END LOOP;
       Return res;
@@ -119,12 +103,9 @@ PACKAGE BODY Fft IS
    BEGIN
       FOR I IN Valeurs'RANGE LOOP
          IF Valeurs(I) >= 0.0 THEN
-            Res (I) := Long_Long_Integer(Float'Floor((Valeurs(I))/Pas));
+            Res (I) := Big_Natural(Float'Ceiling(Valeurs(I)/Pas)-1.0);
          ELSE
-            Res(I) := Long_Long_Integer(Float'Floor((2.0**Nb_De_Bits)+Valeurs(I)/Pas));
-            IF Res(I) = 2**Nb_De_Bits THEN
-               Res(I) := 2**Nb_De_Bits-1;
-            END IF;
+            Res(I) := Big_Natural(2**(Nb_De_Bits)-1)-Big_Natural(Float'Ceiling(-Valeurs(I)/Pas)-1.0);
          END IF;
       END LOOP;
       Return res;

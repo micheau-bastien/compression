@@ -1,4 +1,5 @@
-with ADA.Numerics.Generic_Complex_types;
+WITH ADA.Numerics.Generic_Complex_Types, Binary_Tools;
+USE Binary_Tools;
 
 PACKAGE Fft IS
 
@@ -24,7 +25,7 @@ PACKAGE Fft IS
    -- F : fréquentiel (tableaux de complexes, ou de couple de natural quantifiés)
    -- Q : quantifié (donc tableaux de natural et plus float)
 
-   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Long_Long_Integer;
+   TYPE Tab_TQ IS ARRAY (0..Frame_Size-1) OF Big_Natural;
    -- Si le signal d'origine est quantifié sur 32 bits par exemple, on obtient un overflow en utilisant
    -- des integer, d'où l'utilisation des Long_Long_Integer
    TYPE Tab_T IS ARRAY (0..Frame_Size-1) OF Float;
@@ -44,8 +45,8 @@ PACKAGE Fft IS
    -- c'est pourquoi on conserve le ratio entre la valeur maximum de la frame en entrée et la valeur maximal de quantification
    -- de façon à restituer les nuances
    TYPE RATIO IS RECORD
-      Top : Long_Long_Integer;
-      Bottom : Long_Long_Integer;
+      Top : Big_Natural;
+      Bottom : Big_Natural;
    END RECORD;
 
    -- Pour chaque frame traitée, on garde donc le tableau, et le ratio
